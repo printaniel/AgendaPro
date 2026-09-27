@@ -13,6 +13,6 @@ urlpatterns = [
     path('user/professional-list/', professional_views.ProfessionalListView.as_view(), name = 'professional-list'),
     path('user/<int:pk>/professional-retrieve/', professional_views.ProfessionalRetrieveView.as_view(), name = 'professional-retrieve'),
     path('user/<int:pk>/professional-update/', professional_views.ProfessionalUpdateView.as_view(), name = 'professional-update'),
-    path('user/<int:professional_id>/professional-destroy/', professional_views.ProfessionalDestroyView.as_view(), name = 'professional-destroy')
+    path('user/<int:pk>/professional-destroy/', professional_views.ProfessionalDestroyView.as_view(), name = 'professional-destroy')
 
 ]

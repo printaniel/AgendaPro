@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from management_system.models import User
 from management_system.serializers import UserSerializer
+from management_system.permissions import IsProfessionalAdmin
 
 class ProfessionalCreateView(APIView):
     
@@ -36,5 +37,6 @@ class ProfessionalUpdateView(UpdateAPIView):
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
 
-class ProfessionalDestroyView(APIView):
-    pass 
+class ProfessionalDestroyView(DestroyAPIView):
+    #permission_classes = [IsAuthenticated, IsProfessionalAdmin ]
+    queryset = User.objects.filter(role = 'professional')
