@@ -1,9 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from management_system.serializers import ProfessionalServiceSerializer
-from management_system.permissions import IsProfessionalAdmin
+from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin
 from management_system.models import ProfessionalService
 from django.db.utils import IntegrityError
 
@@ -33,8 +34,10 @@ class ProfessionalServiceRetrieveView(RetrieveAPIView):
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer
 
-class ProfessionalServiceUpdateView(APIView):
-    pass
+class ProfessionalServiceUpdateView(UpdateAPIView):
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
+    queryset = ProfessionalService.objects.all()
+    serializer_class = ProfessionalServiceSerializer
 
 class ProfessionalServiceDestroyView(APIView):
     pass
