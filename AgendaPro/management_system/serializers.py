@@ -46,8 +46,8 @@ class ProfessionalServiceSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(read_only = True)
     
     class Meta:
+        model = ProfessionalService
         fields = ['id','professional','service', 'price', 'duration', 'description']
-        fields = ['professional','service', 'price', 'duration', 'description']
 
     def validate_price(self, price):
         if price < 0:

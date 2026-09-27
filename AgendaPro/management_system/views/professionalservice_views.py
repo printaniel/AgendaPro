@@ -39,5 +39,7 @@ class ProfessionalServiceUpdateView(UpdateAPIView):
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer
 
-class ProfessionalServiceDestroyView(APIView):
-    pass
+class ProfessionalServiceDestroyView(DestroyAPIView):
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
+    queryset = ProfessionalService.objects.all()
+    serializer_class = ProfessionalServiceSerializer
