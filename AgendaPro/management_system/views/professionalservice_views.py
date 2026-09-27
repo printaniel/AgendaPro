@@ -7,6 +7,8 @@ from management_system.serializers import ProfessionalServiceSerializer
 from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin
 from management_system.models import ProfessionalService
 from django.db.utils import IntegrityError
+from django.shortcuts import get_object_or_404
+
 
 class ProfessionalServiceCreateView(APIView):
 
@@ -34,10 +36,25 @@ class ProfessionalServiceRetrieveView(RetrieveAPIView):
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer
 
-class ProfessionalServiceUpdateView(UpdateAPIView):
+class ProfessionalServiceUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
-    queryset = ProfessionalService.objects.all()
-    serializer_class = ProfessionalServiceSerializer
+
+    def patch(self, request, pk):
+
+        professionalservice = get_object_or_404(ProfessionalService, pk = pk)
+        self.check_object_permissions(request, professionalservice.professional)
+        serializer = ProfessionalServiceSerializer(data = request.data, instance = professionalservice, partial =True)
+
+        if serializer.is_valid():
+            try:
+                serializer.save()
+            except IntegrityError as e:
+                return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.data, status = status.HTTP_200_OK)
+        return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
+
+
+    
 
 class ProfessionalServiceDestroyView(DestroyAPIView):
     permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
