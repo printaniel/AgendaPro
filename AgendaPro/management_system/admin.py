@@ -8,5 +8,5 @@ from management_system.models import (
     Appointment)
 
 
-admin.site.register([User, ProfessionalProfile])
+admin.site.register([User, ProfessionalProfile, CustomerProfile, Service, ProfessionalService, Appointment])
 
