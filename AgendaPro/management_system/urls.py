@@ -4,7 +4,8 @@ from management_system.views import (
     user_views,
     professional_views,
     customer_views,
-    service_views
+    service_views,
+    professionalservice_views
 )
 
 
@@ -13,6 +14,7 @@ urlpatterns = [
     path('token/refresh/', TokenRefreshView.as_view(), name = 'refresh'),
     # User
     path('user/list/', user_views.UserListView.as_view(), name = 'user-list'),
+    path('user/role-list/', user_views.RoleSeparetedUserListView.as_view(), name = 'user-role-list'),
     # Professional
     path('user/professional-create/', professional_views.ProfessionalCreateView.as_view(), name = 'professional-create'),
     path('user/professional-list/', professional_views.ProfessionalListView.as_view(), name = 'professional-list'),
@@ -30,5 +32,11 @@ urlpatterns = [
     path('service/<int:pk>/service-retrieve/',service_views.ServiceRetrieveView.as_view(),name = 'service-retrieve'),
     path('service/service-create/', service_views.ServiceCreateView.as_view(),name = 'service-create'),
     path('service/<int:pk>/service-update/',service_views.ServiceUpdateView.as_view(), name = 'service-update'),
-    path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service-destroy'),
+    path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service-destroy'), 
+    # ProfessionalService
+    path('service/<int:pk>/professionalservices-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'create-professional-service'),
+    path('service/professionalservices-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservices-list'),
+    path('service/<int:pk>/professionalservices-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice-retrieve'),  
+    path('professional-services/<int:professional_service_id>/edit/', professionalservice_views.ProfessionalServiceUpdateView.as_view(),name = 'professionalservice-update'),
+    path('professional-services/<int:professional_service_id>/delete/', professionalservice_views.ProfessionalServiceDestroyView.as_view(),name = 'professionalservice-destroy'),
 ]
