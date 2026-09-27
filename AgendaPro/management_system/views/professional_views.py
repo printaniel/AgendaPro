@@ -5,14 +5,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from management_system.models import User
 from management_system.serializers import UserSerializer
-from management_system.permissions import IsProfessionalAdmin
+from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin
 
 class ProfessionalCreateView(APIView):
     
     permission_classes = [AllowAny]  
      
     def post(self, request):
-        
+               
         serializer = UserSerializer(data = request.data)     
         if serializer.is_valid():
             serializer.save(role = 'professional')
@@ -25,18 +25,16 @@ class ProfessionalListView(ListAPIView):
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
     
-    
-
 class ProfessionalRetrieveView(RetrieveAPIView):
     permission_classes = [AllowAny]
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
 
 class ProfessionalUpdateView(UpdateAPIView):
-    
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
 
 class ProfessionalDestroyView(DestroyAPIView):
-    #permission_classes = [IsAuthenticated, IsProfessionalAdmin ]
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
     queryset = User.objects.filter(role = 'professional')
