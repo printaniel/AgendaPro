@@ -42,9 +42,11 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class ProfessionalServiceSerializer(serializers.ModelSerializer):
 
+    professional = serializers.StringRelatedField(read_only = True)
+    
     class Meta:
         model = ProfessionalService
-        fields = ['service', 'price', 'duration', 'description']
+        fields = ['professional','service', 'price', 'duration', 'description']
 
     def validate_price(self, price):
         if price < 0:
