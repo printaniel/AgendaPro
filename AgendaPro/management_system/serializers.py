@@ -15,3 +15,19 @@ class UserSerializer(serializers.ModelSerializer):
         password = validated_data.pop("password")
         user = User.objects.create_user(password = password, **validated_data)
         return user
+
+    def update(self, instance: User, validated_data):
+        
+        if 'password' in validated_data:
+            password = validated_data.pop('password')
+            instance.set_password(password)
+
+        if 'username' in validated_data:
+            instance.username = validated_data.pop('username')
+
+        if 'email' in validated_data:
+            instance.email = validated_data.pop('email')
+
+        instance.save()
+
+        return instance
