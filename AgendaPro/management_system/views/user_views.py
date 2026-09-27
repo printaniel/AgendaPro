@@ -13,12 +13,14 @@ class UserListView(ListAPIView):
 
 class RoleSeparetedUserListView(APIView):
 
+    permission_classes = []
     def get(self, request):
 
         professionals = ProfessionalServices.get_professionals()
         customers = CustomerServices.get_customers()
-        customer_serializer = UserSerializer(data = customers, many = True)
-        professional_serializer = UserSerializer(data = professionals, many = True)
 
-        return Response({'professionals': professional_serializer, 'customers': customer_serializer})
+        customer_serializer = UserSerializer(customers, many = True)
+        professional_serializer = UserSerializer(professionals, many = True)
+
+        return Response({'professionals': professional_serializer.data, 'customers': customer_serializer.data})
     

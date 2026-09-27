@@ -34,9 +34,9 @@ urlpatterns = [
     path('service/<int:pk>/service-update/',service_views.ServiceUpdateView.as_view(), name = 'service-update'),
     path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service-destroy'), 
     # ProfessionalService
-    path('service/<int:pk>/professionalservices-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'create-professional-service'),
-    path('service/professionalservices-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservices-list'),
-    path('service/<int:pk>/professionalservices-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice-retrieve'),  
+    path('service/professionalservice-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'create-professional-service'),
+    path('service/professionalservice-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservices-list'),
+    path('service/<int:pk>/professionalservice-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice-retrieve'),  
     path('professional-services/<int:professional_service_id>/edit/', professionalservice_views.ProfessionalServiceUpdateView.as_view(),name = 'professionalservice-update'),
     path('professional-services/<int:professional_service_id>/delete/', professionalservice_views.ProfessionalServiceDestroyView.as_view(),name = 'professionalservice-destroy'),
 ]

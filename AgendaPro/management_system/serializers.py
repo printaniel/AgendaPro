@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from management_system.models import User, Service
+from management_system.models import User, Service, ProfessionalService
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -39,3 +39,14 @@ class ServiceSerializer(serializers.ModelSerializer):
     class Meta:
         model = Service
         fields = ['id','service_name']
+
+class ProfessionalServiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = ProfessionalService
+        fields = ['service', 'price', 'duration', 'description']
+
+    def validate_price(self, price):
+        if price < 0:
+            raise serializers.ValidationError(detail = 'The price cannot be less than 0')
+        return price
