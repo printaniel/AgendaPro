@@ -23,13 +23,15 @@ class ProfessionalServiceCreateView(APIView):
         return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
 
 class ProfessionalServiceListView(ListAPIView):
-    permission_classes = []
+    permission_classes = [AllowAny]
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer
 
 
-class ProfessionalServiceRetrieveView(APIView):
-    pass
+class ProfessionalServiceRetrieveView(RetrieveAPIView):
+    permission_classes = [AllowAny]
+    queryset = ProfessionalService.objects.all()
+    serializer_class = ProfessionalServiceSerializer
 
 class ProfessionalServiceUpdateView(APIView):
     pass
