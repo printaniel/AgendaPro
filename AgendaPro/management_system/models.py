@@ -7,13 +7,21 @@ class User(AbstractUser):
     ROLE = [("professional","Professional"), ("customer", "Customer")]
     role = models.CharField(max_length = 50,choices = ROLE)
     
+    def __str__(self):
+        return self.username
     
-class ProfessionalProfile(models.Model):  
+class ProfessionalProfile(models.Model):
+    user = models.ForeignKey(User, on_delete= models.CASCADE)
     bio = models.CharField(max_length= 300)
-    avatar = models.ImageField(upload_to= 'avatars/', blank = True, null = True)
     
+    def __str__(self):
+        return f"{self.username} - Perfil"
+        
 class CustomerProfile(models.Model):
-    avatar = models.ImageField(upload_to= 'avatars/', blank = True, null = True)
+    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    
+    def __str__(self):
+        return f"{self.username} - Perfil"
     
 class Service(models.Model):
     service_name = models.CharField(max_length = 50)
@@ -39,8 +47,8 @@ class Appointment(models.Model):
 
     cancelled = models.BooleanField(default = False)
     late_cancelled = models.BooleanField(default = False)
-    customer = models.ForeignKey(User, on_delete = models.CASCADE)
-    professional = models.ForeignKey(User, on_delete = models.CASCADE)
+    customer = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_customer')
+    professional = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_professional')
     service = models.ForeignKey(Service, on_delete = models.CASCADE)
     date = models.DateTimeField(auto_now_add = True)
     appointment_date = models.DateTimeField()

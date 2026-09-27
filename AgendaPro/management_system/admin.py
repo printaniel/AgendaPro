@@ -1,3 +1,12 @@
 from django.contrib import admin
+from management_system.models import (
+    User,
+    ProfessionalProfile,
+    CustomerProfile,
+    Service,
+    ProfessionalService,
+    Appointment)
 
-# Register your models here.
+
+admin.site.register([User, ProfessionalProfile])
+
