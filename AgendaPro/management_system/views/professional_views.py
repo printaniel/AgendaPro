@@ -1,5 +1,5 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -31,8 +31,10 @@ class ProfessionalRetrieveView(RetrieveAPIView):
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
 
-class ProfessionalUpdateView(APIView):
-    pass
+class ProfessionalUpdateView(UpdateAPIView):
+    
+    queryset = User.objects.filter(role = 'professional')
+    serializer_class = UserSerializer
 
 class ProfessionalDestroyView(APIView):
-    pass
+    pass 

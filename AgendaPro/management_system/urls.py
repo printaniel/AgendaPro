@@ -12,7 +12,7 @@ urlpatterns = [
     path('user/professional-create/', professional_views.ProfessionalCreateView.as_view(), name = 'professional-create'),
     path('user/professional-list/', professional_views.ProfessionalListView.as_view(), name = 'professional-list'),
     path('user/<int:pk>/professional-retrieve/', professional_views.ProfessionalRetrieveView.as_view(), name = 'professional-retrieve'),
-    path('user/<int:professional_id>/professional-update/', professional_views.ProfessionalUpdateView.as_view(), name = 'professional-update'),
+    path('user/<int:pk>/professional-update/', professional_views.ProfessionalUpdateView.as_view(), name = 'professional-update'),
     path('user/<int:professional_id>/professional-destroy/', professional_views.ProfessionalDestroyView.as_view(), name = 'professional-destroy')
 
 ]
