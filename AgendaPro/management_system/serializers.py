@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from management_system.models import User
+from management_system.models import User, Service
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -31,3 +31,11 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+
+class ServiceSerializer(serializers.ModelSerializer):
+
+    id = serializers.IntegerField(read_only = True)
+
+    class Meta:
+        model = Service
+        fields = ['id','service_name']

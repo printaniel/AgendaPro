@@ -23,7 +23,7 @@ class CustomerProfile(models.Model):
     
 class Service(models.Model):
     service_name = models.CharField(max_length = 50)
-    professionals = models.ManyToManyField(User, through = 'ProfessionalService', related_name = 'services')
+    professional = models.ManyToManyField(User, through = 'ProfessionalService', related_name = 'services')
 
     def __str__(self):
         return self.service_name
