@@ -2,13 +2,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from management_system.serializers import UserSerializer
 from management_system.models import User
+from management_system.permissions import IsCustomerAdmin, IsSameUserAdmin
 
 
 class CustomerCreateView(APIView):
+
     permission_classes = [AllowAny]
+
     def post(self, request):
 
         serializer = UserSerializer(data = request.data)
@@ -19,21 +22,21 @@ class CustomerCreateView(APIView):
         return Response({"error":serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
 
 class CustomerListView(ListAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
 class CustomerRetrieveView(RetrieveAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
 class CustomerUpdateView(UpdateAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
 class CustomerDestroyView(DestroyAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer

@@ -3,13 +3,21 @@ from rest_framework.permissions import BasePermission
 class IsProfessionalAdmin(BasePermission):
     
     def has_permission(self, request, view):
-        print("Intento de probar si es profesional")
-        print(request.user.role)
+
         if request.user.is_staff:
             return True        
         if request.user.role == 'professional':
-            print("Es professional")
             return True       
+        return False
+
+class IsCustomerAdmin(BasePermission):
+
+    def has_permission(self, request, view):
+
+        if request.user.is_staff:
+            return True
+        if request.user.role == 'customer':
+            return True
         return False
     
 class IsSameUserAdmin(BasePermission):
