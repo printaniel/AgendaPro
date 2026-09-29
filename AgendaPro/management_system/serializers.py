@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from management_system.models import User, Service, ProfessionalService
+from management_system.models import User, Service, ProfessionalService, Appointment, User
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -53,3 +53,26 @@ class ProfessionalServiceSerializer(serializers.ModelSerializer):
         if price < 0:
             raise serializers.ValidationError(detail = 'The price cannot be less than 0')
         return price
+
+
+class AppointmentSerializer(serializers.ModelSerializer):
+
+    customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True)
+    customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
+    professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
+
+    class Meta:
+        model = Appointment
+        fields = ['customer_name','customer','professional_name','service', 'appointment_date']
+
+
+class AppointmentOnlyReadSerializer(serializers.ModelSerializer):
+
+    customer = serializers.StringRelatedField(read_only = True)
+    professional = serializers.StringRelatedField(read_only = True)
+    
+    class Meta:
+        model = Appointment
+        fields = ['professional','customer','service', 'appointment_date', 'cancelled']
+
+

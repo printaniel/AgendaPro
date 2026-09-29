@@ -1,11 +1,13 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from management_system.views import appointment_views
 from management_system.views import (
     user_views,
     professional_views,
     customer_views,
     service_views,
-    professionalservice_views
+    professionalservice_views,
+    appointment_views
 )
 
 
@@ -39,4 +41,10 @@ urlpatterns = [
     path('service/<int:pk>/professionalservice-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice-retrieve'),  
     path('service/<int:pk>/professionalservice-update/', professionalservice_views.ProfessionalServiceUpdateView.as_view(),name = 'professionalservice-update'),
     path('service/<int:pk>/professionalservice-destroy/', professionalservice_views.ProfessionalServiceDestroyView.as_view(),name = 'professionalservice-destroy'),
+    # Appointments
+    path('appointment/appointment-create/', appointment_views.AppointmentCreateView.as_view(), name = 'appointment-create-as-professional'),
+    path('appointment/appointment-list/', appointment_views.AppointmentListView.as_view(), name = 'appointment-list'),
+    path('appointment/<int:pk>/appointment-retrieve/', appointment_views.AppointmentRetrieveView.as_view(), name = 'appointment-retrieve'),
+    path('appointment/<int:pk>/appointment-update/',appointment_views.AppointmentUpdateView.as_view(), name = 'appointment-update'),
+    path('appointments/<int:pk>/appointment-destroy/',appointment_views.AppointmentDestroyView.as_view(), name = 'appointment-destroy')
 ]
