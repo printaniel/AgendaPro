@@ -1,4 +1,5 @@
 from rest_framework.permissions import BasePermission
+from management_system.models import Appointment
 
 class IsProfessionalAdmin(BasePermission):
     
@@ -27,3 +28,11 @@ class IsSameUserAdmin(BasePermission):
         if request.user.is_staff:
              return True      
         return request.user == obj
+
+class IsAppointmentoOwnerAdmin(BasePermission):
+
+    def has_object_permission(self, request, view, appointment: Appointment):
+        if request.user.is_staff:
+            return True
+
+        return request.user == appointment.professional or request.user == appointment.customer

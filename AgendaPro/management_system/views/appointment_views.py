@@ -1,15 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView
-from rest_framework.permissions import IsAuthenticated
-from management_system.serializers import (
-    AppointmentSerializer, 
-    AppointmentOnlyReadSerializer
-)
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from management_system.serializers import AppointmentSerializer
 from management_system.models import Appointment
 from management_system.services.appointments_services import AppointmentsService
 from management_system.services.service_exceptions import ProfessionalDoesNotOfferService, InvalidRoleForAppointment
+from management_system.permissions import IsAppointmentoOwnerAdmin, IsCustomerAdmin, IsProfessionalAdmin
 from django.db.utils import IntegrityError
 from django.db import transaction
 
@@ -41,8 +39,10 @@ class AppointmentListView(ListAPIView):
     serializer_class = AppointmentSerializer
 
 
-class AppointmentRetrieveView(APIView):
-    pass
+class AppointmentRetrieveView(RetrieveAPIView):
+    permission_classes = [IsAuthenticated, IsAppointmentoOwnerAdmin]
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
 
 class AppointmentUpdateView(APIView):
     pass
