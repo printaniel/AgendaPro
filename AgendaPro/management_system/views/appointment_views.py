@@ -35,8 +35,10 @@ class AppointmentCreateView(APIView):
             return Response({"error": serializer.errors})
 
 
-class AppointmentListView(APIView):
-    pass
+class AppointmentListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    queryset = Appointment.objects.all()
+    serializer_class = AppointmentSerializer
 
 
 class AppointmentRetrieveView(APIView):
