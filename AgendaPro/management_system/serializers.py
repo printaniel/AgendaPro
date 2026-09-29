@@ -66,13 +66,5 @@ class AppointmentSerializer(serializers.ModelSerializer):
         fields = ['customer_name','customer','professional_name','service', 'appointment_date']
 
 
-class AppointmentOnlyReadSerializer(serializers.ModelSerializer):
-
-    customer = serializers.StringRelatedField(read_only = True)
-    professional = serializers.StringRelatedField(read_only = True)
-    
-    class Meta:
-        model = Appointment
-        fields = ['professional','customer','service', 'appointment_date', 'cancelled']
 
 
