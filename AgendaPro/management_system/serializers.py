@@ -60,10 +60,13 @@ class AppointmentSerializer(serializers.ModelSerializer):
     customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True)
     customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
     professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
+    cancelled = serializers.BooleanField(read_only = True)
+
+    id = serializers.IntegerField(read_only = True)
 
     class Meta:
         model = Appointment
-        fields = ['customer_name','customer','professional_name','service', 'appointment_date']
+        fields = ['id','customer_name','customer','professional_name','service', 'appointment_date','cancelled']
 
 
 

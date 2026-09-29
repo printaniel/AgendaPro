@@ -1,6 +1,9 @@
 from management_system.models import Appointment
 from management_system.models import Service, User
-from management_system.services.service_exceptions import InvalidRoleForAppointment, ProfessionalDoesNotOfferService
+from management_system.services.service_exceptions import (
+    InvalidRoleForAppointment, 
+    ProfessionalDoesNotOfferService,
+    EntityNotFound)
 
 class AppointmentsService:
 
@@ -27,3 +30,15 @@ class AppointmentsService:
         customer = user if user.role == 'customer' else data.get('customer')
 
         return (professional, customer)
+
+    @staticmethod
+    def cancel_appointment(appointment: Appointment):
+        appointment.cancelled = True
+        appointment.save()
+
+    @staticmethod
+    def get_not_cancelled_appointment(pk):
+        appointment = Appointment.objects.filter(id = pk, cancelled = False).first()
+        if not appointment:
+            raise EntityNotFound('not cancelled appointment', pk)
+        return appointment

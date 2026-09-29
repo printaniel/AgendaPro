@@ -6,10 +6,14 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from management_system.serializers import AppointmentSerializer
 from management_system.models import Appointment
 from management_system.services.appointments_services import AppointmentsService
-from management_system.services.service_exceptions import ProfessionalDoesNotOfferService, InvalidRoleForAppointment
-from management_system.permissions import IsAppointmentoOwnerAdmin, IsCustomerAdmin, IsProfessionalAdmin
+from management_system.services.service_exceptions import (
+    ProfessionalDoesNotOfferService,
+    InvalidRoleForAppointment,
+    EntityNotFound)
+from management_system.permissions import IsAppointmentoOwnerAdmin
 from django.db.utils import IntegrityError
 from django.db import transaction
+
 
 class AppointmentCreateView(APIView):
 
@@ -45,7 +49,24 @@ class AppointmentRetrieveView(RetrieveAPIView):
     serializer_class = AppointmentSerializer
 
 class AppointmentUpdateView(APIView):
+    """
+    Solo un usuario Customer o Professional asociados a la cita pueden acceder a editarla
+    Se debe validar que dicho usuario brinde dicho servicio 
+    """
+
     pass
 
-class AppointmentDestroyView(APIView):
-    pass
+class AppointmentCancelView(APIView):
+
+    permission_classes = [IsAuthenticated, IsAppointmentoOwnerAdmin]
+    def delete(self, request, pk):
+        try:
+            appointment = AppointmentsService.get_not_cancelled_appointment(pk)
+        except EntityNotFound as e:
+            return Response({"error":str(e)}, status = e.status)
+
+        self.check_object_permissions(request, appointment)
+
+        AppointmentsService.cancel_appointment(appointment)
+        return Response({"message": f"Appointment with id {pk} has been cancelled"}, status = status.HTTP_200_OK)
+        

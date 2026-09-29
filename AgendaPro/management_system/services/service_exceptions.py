@@ -23,5 +23,10 @@ class InvalidRoleForAppointment (ServiceException):
     def __init__(self, message = 'Invalid user role for appointment', status = 403):
         super().__init__(message, status)
 
+class EntityNotFound(ServiceException):
+
+    def __init__(self, entity, pk, status = 404):
+        super().__init__(f'{entity} with id {pk} not found', status) 
+
 
 
