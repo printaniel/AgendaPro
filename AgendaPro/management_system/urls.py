@@ -46,5 +46,5 @@ urlpatterns = [
     path('appointment/appointment-list/', appointment_views.AppointmentListView.as_view(), name = 'appointment-list'),
     path('appointment/<int:pk>/appointment-retrieve/', appointment_views.AppointmentRetrieveView.as_view(), name = 'appointment-retrieve'),
     path('appointment/<int:pk>/appointment-update/',appointment_views.AppointmentUpdateView.as_view(), name = 'appointment-update'),
-    path('appointment/<int:pk>/appointment-cancel/',appointment_views.AppointmentCancelView.as_view(), name = 'appointment-cancel')
+    path('appointment/<int:pk>/appointment-cancel/',appointment_views.AppointmentCancelView.as_view(), name = 'appointment-cancel'),
 ]

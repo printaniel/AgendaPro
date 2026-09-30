@@ -63,9 +63,10 @@ class AppointmentUpdateView(APIView):
         if serializer.is_valid():
             try:
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
+                read_serializer_result = AppointmentSerializer(instance = appointment)
             except (ProfessionalDoesNotOfferService, InvalidRoleForAppointment, AppointmentConflict) as e:
                 return Response({"error": str(e)}, status = e.status)          
-            return Response(serializer.data, status = status.HTTP_200_OK)
+            return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:
             return Response({"error":serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 

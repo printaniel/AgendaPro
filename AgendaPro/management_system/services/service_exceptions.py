@@ -31,7 +31,7 @@ class EntityNotFound(ServiceException):
 class AppointmentConflict(ServiceException):
 
     def __init__(self):
-        super().__init__(message = 'There is an appointment with this data', status = 400)
+        super().__init__(message = 'There is an appointment with this data', status = 409)
 
 
 
