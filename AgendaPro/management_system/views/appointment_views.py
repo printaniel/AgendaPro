@@ -8,7 +8,7 @@ from management_system.models import Appointment
 from management_system.services.appointments_services import AppointmentService
 from management_system.services.service_exceptions import (
     ProfessionalDoesNotOfferService,
-    InvalidRoleForAppointment,
+    InvalidRole,
     EntityNotFound,
     AppointmentConflict)
 from management_system.permissions import IsAppointmentOwnerAdmin
@@ -26,13 +26,14 @@ class AppointmentCreateView(APIView):
             if serializer.is_valid():
 
                 try:
-                    with transaction.atomic():   
+                    with transaction.atomic():
+                        AppointmentService.validate_customer_professional_role(request.user)
                         appointment = AppointmentService.create_appointment(request.user, serializer.validated_data)
                         read_serializer = AppointmentSerializer(instance = appointment)
                     return Response(read_serializer.data, status = status.HTTP_201_CREATED)
                 except IntegrityError:
                     return Response({"error":"Appointment cannot be created"})
-                except (ProfessionalDoesNotOfferService, InvalidRoleForAppointment) as e:
+                except (ProfessionalDoesNotOfferService, InvalidRole) as e:
                     return Response({"error": str(e)}, status = e.status)
                 
             return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
@@ -62,9 +63,10 @@ class AppointmentUpdateView(APIView):
         
         if serializer.is_valid():
             try:
+                AppointmentService.validate_customer_professional_role(request.user)
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
                 read_serializer_result = AppointmentSerializer(instance = appointment)
-            except (ProfessionalDoesNotOfferService, AppointmentConflict) as e:
+            except (ProfessionalDoesNotOfferService, AppointmentConflict, InvalidRole) as e:
                 return Response({"error": str(e)}, status = e.status)          
             return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:

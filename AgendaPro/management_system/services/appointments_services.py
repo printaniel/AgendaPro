@@ -3,7 +3,8 @@ from management_system.models import Service, User
 from management_system.services.service_exceptions import (
     ProfessionalDoesNotOfferService,
     EntityNotFound,
-    AppointmentConflict)
+    AppointmentConflict,
+    InvalidRole)
 from datetime import datetime
 
 class AppointmentService:
@@ -68,3 +69,8 @@ class AppointmentService:
         professional = user if user.role == 'professional' else data.get('professional', appointment.professional)
         customer = user if user.role == 'customer' else data.get('customer', appointment.customer)
         return (professional, customer, service, appointment_date)
+    
+    @staticmethod
+    def validate_customer_professional_role(user: User):
+        if not user or user.role not in ['professional', 'customer']:
+            raise InvalidRole('create appointment')

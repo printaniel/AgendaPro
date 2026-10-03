@@ -18,10 +18,10 @@ class ProfessionalDoesNotOfferService(ServiceException):
     def __init__(self, message = 'The professional doesnot offer the service', status = 400):
         super().__init__(message, status)
 
-class InvalidRoleForAppointment (ServiceException):
+class InvalidRole(ServiceException):
 
-    def __init__(self, message = 'Invalid user role for appointment', status = 403):
-        super().__init__(message, status)
+    def __init__(self, action, status = 403):
+        super().__init__(message = f'Invalid user role for this action {action}', status = 403)
 
 class EntityNotFound(ServiceException):
 
