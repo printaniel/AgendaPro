@@ -11,7 +11,7 @@ from management_system.services.service_exceptions import (
     InvalidRoleForAppointment,
     EntityNotFound,
     AppointmentConflict)
-from management_system.permissions import IsAppointmentoOwnerAdmin
+from management_system.permissions import IsAppointmentOwnerAdmin
 from django.db.utils import IntegrityError
 from django.db import transaction
 
@@ -35,7 +35,7 @@ class AppointmentCreateView(APIView):
                 except (ProfessionalDoesNotOfferService, InvalidRoleForAppointment) as e:
                     return Response({"error": str(e)}, status = e.status)
                 
-            return Response({"error": serializer.errors})
+            return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
 
 class AppointmentListView(ListAPIView):
@@ -45,12 +45,12 @@ class AppointmentListView(ListAPIView):
 
 
 class AppointmentRetrieveView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsAppointmentoOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
 
 class AppointmentUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsAppointmentoOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
 
     def patch(self, request, pk):
         try:
@@ -64,7 +64,7 @@ class AppointmentUpdateView(APIView):
             try:
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
                 read_serializer_result = AppointmentSerializer(instance = appointment)
-            except (ProfessionalDoesNotOfferService, InvalidRoleForAppointment, AppointmentConflict) as e:
+            except (ProfessionalDoesNotOfferService, AppointmentConflict) as e:
                 return Response({"error": str(e)}, status = e.status)          
             return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:
@@ -73,7 +73,7 @@ class AppointmentUpdateView(APIView):
 
 class AppointmentCancelView(APIView):
 
-    permission_classes = [IsAuthenticated, IsAppointmentoOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
     def delete(self, request, pk):
         try:
             appointment = AppointmentService.get_not_cancelled_appointment(pk)

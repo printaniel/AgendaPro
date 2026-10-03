@@ -29,7 +29,7 @@ class IsSameUserAdmin(BasePermission):
              return True      
         return request.user == obj
 
-class IsAppointmentoOwnerAdmin(BasePermission):
+class IsAppointmentOwnerAdmin(BasePermission):
 
     def has_object_permission(self, request, view, appointment: Appointment):
         if request.user.is_staff:

@@ -4,14 +4,13 @@ from management_system.services.service_exceptions import (
     ProfessionalDoesNotOfferService,
     EntityNotFound,
     AppointmentConflict)
+from datetime import datetime
 
 class AppointmentService:
 
     @staticmethod
     def create_appointment(user: User, data: dict) -> Appointment :
-        professional, customer = AppointmentService._resolve_appointment_actors(user, data)
-        service = data.get('service')
-        appointment_date = data.get('appointment_date')
+        professional, customer, service, appointment_date  = AppointmentService._resolve_all(user, data, None)
         AppointmentService.validate_professional_doesnt_have_service(service = service,professional = professional)  
         return Appointment.objects.create(professional = professional, customer = customer, appointment_date = appointment_date, service = service)
 
@@ -62,11 +61,10 @@ class AppointmentService:
                raise AppointmentConflict 
            
     @staticmethod
-    def _resolve_all(user: User, data: dict, appointment: Appointment):
+    def _resolve_all(user: User, data: dict, appointment: Appointment) -> User|User|Service|datetime:
         
         appointment_date = data.get('appointment_date',appointment.appointment_date)
         service = data.get('service', appointment.service)
         professional = user if user.role == 'professional' else data.get('professional', appointment.professional)
-        customer = user if user.role == 'customer' else data.get('customer', appointment,customer)
-        
+        customer = user if user.role == 'customer' else data.get('customer', appointment.customer)
         return (professional, customer, service, appointment_date)
