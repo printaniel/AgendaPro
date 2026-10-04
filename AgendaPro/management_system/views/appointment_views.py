@@ -69,7 +69,9 @@ class AppointmentUpdateView(APIView):
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
                 read_serializer_result = AppointmentSerializer(instance = appointment)
             except (ProfessionalDoesNotOfferService, AppointmentConflict, InvalidRole, NotAllowedAction) as e:
-                return Response({"error": str(e)}, status = e.status)          
+                return Response({"error": str(e)}, status = e.status)  
+            except IntegrityError:
+                return Response({"error":"Appointment cannot be created"}, status = status.HTTP_409_CONFLICT)        
             return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:
             return Response({"error":serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
