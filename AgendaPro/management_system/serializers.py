@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from management_system.models import User, Service, ProfessionalService, Appointment, User
+from datetime import datetime
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -68,6 +69,12 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date','cancelled']
+        
+    def validate_appointment_date(self, appointment_date):
+        if appointment_date < datetime.now():
+            raise serializers.ValidationError('The appointment date must be in the future')
+        return appointment_date
+            
 
 
     
