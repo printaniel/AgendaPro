@@ -5,7 +5,7 @@ from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView,
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from management_system.serializers import UserSerializer
 from management_system.models import User
-from management_system.permissions import IsCustomerAdmin, IsSameUserAdmin
+from management_system.permissions import IsCustomerOrAdmin, IsOwnerOrAdmin
 
 
 class CustomerCreateView(APIView):
@@ -27,16 +27,16 @@ class CustomerListView(ListAPIView):
     serializer_class = UserSerializer
 
 class CustomerRetrieveView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
+    permission_classes = [IsAuthenticated, IsCustomerOrAdmin, IsOwnerOrAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
 class CustomerUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
+    permission_classes = [IsAuthenticated, IsCustomerOrAdmin, IsOwnerOrAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
 class CustomerDestroyView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsCustomerAdmin, IsSameUserAdmin]
+    permission_classes = [IsAuthenticated, IsCustomerOrAdmin, IsOwnerOrAdmin]
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer

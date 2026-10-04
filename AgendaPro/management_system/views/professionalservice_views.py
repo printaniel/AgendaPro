@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from management_system.serializers import ProfessionalServiceSerializer
-from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin, IsAppointmentOwnerAdmin
+from management_system.permissions import IsProfessionalOrAdmin, IsOwnerOrAdmin, IsAppointmentOwnerAdmin
 from management_system.models import ProfessionalService
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 
 class ProfessionalServiceCreateView(APIView):
 
-    permission_classes = [IsAuthenticated, IsProfessionalAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin]
 
     def post(self, request):
 
@@ -37,7 +37,7 @@ class ProfessionalServiceRetrieveView(RetrieveAPIView):
     serializer_class = ProfessionalServiceSerializer
 
 class ProfessionalServiceUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsOwnerOrAdmin]
 
     def patch(self, request, pk):
 
@@ -55,6 +55,6 @@ class ProfessionalServiceUpdateView(APIView):
 
 
 class ProfessionalServiceDestroyView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsAppointmentOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsAppointmentOwnerAdmin]
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer

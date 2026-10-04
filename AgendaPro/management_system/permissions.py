@@ -1,7 +1,7 @@
 from rest_framework.permissions import BasePermission
 from management_system.models import Appointment, ProfessionalService
 
-class IsProfessionalAdmin(BasePermission):
+class IsProfessionalOrAdmin(BasePermission):
     
     def has_permission(self, request, view):
 
@@ -11,7 +11,7 @@ class IsProfessionalAdmin(BasePermission):
             return True       
         return False
 
-class IsCustomerAdmin(BasePermission):
+class IsCustomerOrAdmin(BasePermission):
 
     def has_permission(self, request, view):
 
@@ -21,7 +21,7 @@ class IsCustomerAdmin(BasePermission):
             return True
         return False
     
-class IsSameUserAdmin(BasePermission):
+class IsOwnerOrAdmin(BasePermission):
     
     def has_object_permission(self, request, view, obj):
         
