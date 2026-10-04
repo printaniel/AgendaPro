@@ -1,6 +1,6 @@
 
 class ServiceException(Exception):
-    def __init__(self, message = 'Service Exception', status = 200):
+    def __init__(self, message = 'Service Exception', status = 406):
         self.message = message
         self.status = status
 
@@ -22,10 +22,6 @@ class InvalidRole(ServiceException):
 class EntityNotFound(ServiceException):
     def __init__(self, entity, pk, status = 404):
         super().__init__(f'{entity} with id {pk} not found', status) 
-
-class AppointmentConflict(ServiceException):
-    def __init__(self):
-        super().__init__(message = 'There is an appointment with this data', status = 409)
 
 class MissingRequiredField(ServiceException):    
     def __init__(self, field):

@@ -61,6 +61,7 @@ class AppointmentUpdateView(APIView):
         except EntityNotFound as e:
             return Response({"error":str(e)}, status = e.status)
         
+        self.check_object_permissions(request, appointment)
         serializer = AppointmentSerializer(instance = appointment, data = request.data, partial = True)
         
         if serializer.is_valid():

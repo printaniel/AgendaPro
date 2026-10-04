@@ -1,6 +1,7 @@
 from  rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from management_system.models import User
 from management_system.serializers import UserSerializer
 from management_system.services.customer_services import CustomerServices
@@ -8,12 +9,13 @@ from management_system.services.professional_services import ProfessionalService
 
 
 class UserListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 class RoleSeparetedUserListView(APIView):
 
-    permission_classes = []
+    permission_classes = [IsAuthenticated, IsAdminUser]
     def get(self, request):
 
         professionals = ProfessionalServices.get_professionals()

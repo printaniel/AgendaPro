@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from management_system.serializers import ProfessionalServiceSerializer
-from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin
+from management_system.permissions import IsProfessionalAdmin, IsSameUserAdmin, IsAppointmentOwnerAdmin
 from management_system.models import ProfessionalService
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 
 class ProfessionalServiceCreateView(APIView):
 
-    permission_classes = []
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin]
 
     def post(self, request):
 
@@ -51,12 +51,10 @@ class ProfessionalServiceUpdateView(APIView):
             except IntegrityError as e:
                 return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_400_BAD_REQUEST)
             return Response(serializer.data, status = status.HTTP_200_OK)
-        return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
+        return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
-
-    
 
 class ProfessionalServiceDestroyView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsSameUserAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalAdmin, IsAppointmentOwnerAdmin]
     queryset = ProfessionalService.objects.all()
     serializer_class = ProfessionalServiceSerializer
