@@ -48,7 +48,7 @@ class Appointment(models.Model):
     customer = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_customer')
     professional = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_professional')
     service = models.ForeignKey(Service, on_delete = models.CASCADE)
-    date = models.DateTimeField(auto_now_add = True)
+    create_at = models.DateTimeField(auto_now_add = True)
     appointment_date = models.DateTimeField()
 
     class Meta:
