@@ -57,9 +57,9 @@ class ProfessionalServiceSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
 
-    customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True)
+    customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True, required = False)
     customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
-    professional = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'professional'), write_only = True)
+    professional = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'professional'), write_only = True, required = False)
     professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
     cancelled = serializers.BooleanField(read_only = True)
 
@@ -68,6 +68,9 @@ class AppointmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date','cancelled']
+
+
+    
 
 
 

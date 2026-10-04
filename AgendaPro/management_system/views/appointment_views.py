@@ -10,7 +10,9 @@ from management_system.services.service_exceptions import (
     ProfessionalDoesNotOfferService,
     InvalidRole,
     EntityNotFound,
-    AppointmentConflict)
+    AppointmentConflict,
+    MissingRequiredField,
+    NotAllowedAction)
 from management_system.permissions import IsAppointmentOwnerAdmin
 from django.db.utils import IntegrityError
 from django.db import transaction
@@ -27,13 +29,12 @@ class AppointmentCreateView(APIView):
 
                 try:
                     with transaction.atomic():
-                        AppointmentService.validate_customer_professional_role(request.user)
                         appointment = AppointmentService.create_appointment(request.user, serializer.validated_data)
                         read_serializer = AppointmentSerializer(instance = appointment)
                     return Response(read_serializer.data, status = status.HTTP_201_CREATED)
                 except IntegrityError:
-                    return Response({"error":"Appointment cannot be created"})
-                except (ProfessionalDoesNotOfferService, InvalidRole) as e:
+                    return Response({"error":"Appointment cannot be created"}, status = status.HTTP_409_CONFLICT)
+                except (ProfessionalDoesNotOfferService, InvalidRole, MissingRequiredField) as e:
                     return Response({"error": str(e)}, status = e.status)
                 
             return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
@@ -54,6 +55,7 @@ class AppointmentUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
 
     def patch(self, request, pk):
+        
         try:
             appointment = AppointmentService.get_appointment(pk)
         except EntityNotFound as e:
@@ -63,10 +65,9 @@ class AppointmentUpdateView(APIView):
         
         if serializer.is_valid():
             try:
-                AppointmentService.validate_customer_professional_role(request.user)
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
                 read_serializer_result = AppointmentSerializer(instance = appointment)
-            except (ProfessionalDoesNotOfferService, AppointmentConflict, InvalidRole) as e:
+            except (ProfessionalDoesNotOfferService, AppointmentConflict, InvalidRole, NotAllowedAction) as e:
                 return Response({"error": str(e)}, status = e.status)          
             return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:
