@@ -24,17 +24,13 @@ class AppointmentService:
         AppointmentService._validate_customer_professional_role(user)
         AppointmentService._validate_actor_cannot_change_own_role_field (user, data)
         professional, customer, service, appointment_date = AppointmentService._resolve_all_for_update(user, data, appointment)
-        AppointmentService.validate_professional_doesnt_have_service(service, professional)
+        AppointmentService._validate_professional_doesnt_have_service(service, professional)
         appointment.professional = professional
         appointment.customer = customer
         appointment.service = service
         appointment.appointment_date = appointment_date
-        AppointmentService.validate_unique_appointment(appointment)
+        AppointmentService._validate_unique_appointment(appointment)
         appointment.save()
-    @staticmethod
-    def validate_professional_doesnt_have_service(service:Service, professional: User):
-        if not professional.professional_services.filter(service = service).exists():
-            raise ProfessionalDoesNotOfferService
 
     @staticmethod
     def cancel_appointment(appointment: Appointment):
@@ -88,8 +84,7 @@ class AppointmentService:
         elif user.role == 'professional' and data.get('professional'):
             raise NotAllowedAction('edit professional')
     
-    @staticmethod
-    def validate_unique_appointment(appointment: Appointment):
+    def _validate_unique_appointment(appointment: Appointment):
         appointments = Appointment.objects.filter(
             professional = appointment.professional, 
             service = appointment.service, 
@@ -97,9 +92,11 @@ class AppointmentService:
             cancelled = False).exclude(id = appointment.id)
         if appointments.exists():
             raise AppointmentConflict
+
+    def _validate_professional_doesnt_have_service(service:Service, professional: User):
+        if not professional.professional_services.filter(service = service).exists():
+            raise ProfessionalDoesNotOfferService  
     
-    
-    @staticmethod
     def _resolve_all_for_create(user: User, data: dict):       
         service = data.get('service')
         professional = user if user.role == 'professional' else data.get('professional')
