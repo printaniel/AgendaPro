@@ -9,17 +9,17 @@ class User(AbstractUser):
         return self.username
     
 class ProfessionalProfile(models.Model):
-    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    user = models.OneToOneField(User, on_delete= models.CASCADE)
     bio = models.CharField(max_length= 300)
     
     def __str__(self):
-        return f"{self.username} - Perfil"
+        return f"{self.user.username} - Perfil"
         
 class CustomerProfile(models.Model):
-    user = models.ForeignKey(User, on_delete= models.CASCADE)
+    user = models.OneToOneField(User, on_delete= models.CASCADE)
     
     def __str__(self):
-        return f"{self.username} - Perfil"
+        return f"{self.user.username} - Perfil"
     
 class Service(models.Model):
     service_name = models.CharField(max_length = 50)
