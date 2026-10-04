@@ -80,7 +80,7 @@ class AppointmentUpdateView(APIView):
 class AppointmentCancelView(APIView):
 
     permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
-    def delete(self, request, pk):
+    def post(self, request, pk):
         try:
             appointment = AppointmentService.get_not_cancelled_appointment(pk)
         except EntityNotFound as e:
