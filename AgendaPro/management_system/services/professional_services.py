@@ -4,7 +4,7 @@ from management_system.models import User, Service
 class ProfessionalServices:
 
     @staticmethod
-    def get_professionals() -> User:
+    def get_professionals():
         return User.objects.filter(role = 'professional')
 
     @staticmethod

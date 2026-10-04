@@ -13,13 +13,13 @@ class ProfessionalProfile(models.Model):
     bio = models.CharField(max_length= 300)
     
     def __str__(self):
-        return f"{self.user.username} - Perfil"
+        return f"{self.user.username} - Profile"
         
 class CustomerProfile(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE)
     
     def __str__(self):
-        return f"{self.user.username} - Perfil"
+        return f"{self.user.username} - Profile"
     
 class Service(models.Model):
     service_name = models.CharField(max_length = 50)
@@ -60,4 +60,4 @@ class Appointment(models.Model):
             ) ]
         
     def __str__(self):
-        return f"Cita: {self.customer.username} - {self.professional.username} - {self.service.service_name} - {self.appointment_date}"
+        return f"Appointment: {self.customer.username} - {self.professional.username} - {self.service.service_name} - {self.appointment_date}"
