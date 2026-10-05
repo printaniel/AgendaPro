@@ -32,6 +32,13 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
 
         return instance
+    
+class PublicProfessionalSerializer(serializers.ModelSerializer):
+    
+    services = serializers.StringRelatedField(many = True)
+    class Meta:
+        model = User
+        fields = ['username','services']
 
 class ServiceSerializer(serializers.ModelSerializer):
 
