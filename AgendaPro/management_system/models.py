@@ -36,7 +36,7 @@ class ProfessionalService(models.Model):
     description = models.TextField()
 
     class Meta:
-        unique_together = ['professional', 'service','price','duration']
+        unique_together = ['professional', 'service']
 
     def __str__(self):
         return f"{self.professional.username} - {self.service.service_name}"
