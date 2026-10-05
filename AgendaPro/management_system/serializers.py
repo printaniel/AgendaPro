@@ -33,12 +33,17 @@ class UserSerializer(serializers.ModelSerializer):
 
         return instance
     
-class PublicProfessionalSerializer(serializers.ModelSerializer):
-    
+class PublicProfessionalSerializer(serializers.ModelSerializer):    
     services = serializers.StringRelatedField(many = True)
     class Meta:
         model = User
         fields = ['username','services']
+        
+class PrivateProfessionalSerializer(UserSerializer):   
+    services = serializers.StringRelatedField(many = True)    
+    class Meta:
+        model = User
+        fields = ['id','username', 'password', 'email', 'services']
 
 class ServiceSerializer(serializers.ModelSerializer):
 
