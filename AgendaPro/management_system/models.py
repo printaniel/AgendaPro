@@ -41,21 +41,27 @@ class ProfessionalService(models.Model):
     def __str__(self):
         return f"{self.professional.username} - {self.service.service_name}"
 
-class Appointment(models.Model): 
+class Appointment(models.Model):
+    class Status(models.TextChoices):
+        CONFIRMED = "confirmed", "Confirmed"
+        CANCELLED = "cancelled", "Cancelled"
+        LATE_CANCELLED = "late_cancelled", "Late cancelled"
+        COMPLETED = "completed", "Completed"
+        NO_SHOW = "no_show", "No show"
 
-    cancelled = models.BooleanField(default = False)
-    late_cancelled = models.BooleanField(default = False)
     customer = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_customer')
     professional = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_professional')
     service = models.ForeignKey(Service, on_delete = models.CASCADE)
-    create_at = models.DateTimeField(auto_now_add = True)
     appointment_date = models.DateTimeField()
-
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.CONFIRMED)
+    create_at = models.DateTimeField(auto_now_add = True)
+    cancelled_at = models.DateField(null = True, blank = True)
+    
     class Meta:
         constraints = [
             models.UniqueConstraint(
             fields = ['appointment_date','professional', 'service'],
-            condition = models.Q(cancelled = False),
+            condition = models.Q(status = "confirmed"),
             name = 'unique_appointment_slot'
             ) ]
         
