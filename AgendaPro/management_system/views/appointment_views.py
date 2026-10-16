@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-from management_system.serializers import AppointmentSerializer
+from management_system.serializers import AppointmentSerializer, AppointmentUpdateSerializer
 from management_system.models import Appointment
 from management_system.services.appointments_services import AppointmentService
 from management_system.services.service_exceptions import (
@@ -62,7 +62,7 @@ class AppointmentUpdateView(APIView):
             return Response({"error":str(e)}, status = e.status)
         
         self.check_object_permissions(request, appointment)
-        serializer = AppointmentSerializer(instance = appointment, data = request.data, partial = True)
+        serializer = AppointmentUpdateSerializer(instance = appointment, data = request.data, partial = True)
         
         if serializer.is_valid():
             try:

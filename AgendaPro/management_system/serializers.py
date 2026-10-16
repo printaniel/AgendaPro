@@ -70,6 +70,10 @@ class ProfessionalServiceSerializer(serializers.ModelSerializer):
 
 class AppointmentSerializer(serializers.ModelSerializer):
 
+    """
+    Serializer utilizado tanto como para la creacion y listado de citas 
+    """
+
     customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True, required = False)
     customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
     professional = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'professional'), write_only = True, required = False)
@@ -80,13 +84,27 @@ class AppointmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Appointment
-        fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date','cancelled']
+        fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date']
         
     def validate_appointment_date(self, appointment_date):
         if appointment_date < datetime.now():
             raise serializers.ValidationError('The appointment date must be in the future')
         return appointment_date
-            
+
+class AppointmentUpdateSerializer(serializer.ModelSerializer):
+
+    customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
+    professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
+    cancelled = serializer.BooleanField(read_only = True)
+
+    class Meta: 
+        model = Appointment
+        fields = ["id", "customer_name","professional_name","appointment_date"]
+
+    def validate_appointment_date(self, appointment_date):
+        if appointment_date < datetime.now():
+            raise serializers.ValidationError('The appointment date must be in the future')
+        return appointment_date       
 
 
     

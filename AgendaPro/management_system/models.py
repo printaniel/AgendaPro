@@ -11,7 +11,7 @@ class User(AbstractUser):
 class ProfessionalProfile(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE)
     bio = models.CharField(max_length= 300)
-    
+   
     def __str__(self):
         return f"{self.user.username} - Profile"
         
@@ -60,10 +60,13 @@ class Appointment(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-            fields = ['appointment_date','professional', 'service'],
+            fields = ['appointment_date','professional'],
             condition = models.Q(status = "confirmed"),
             name = 'unique_appointment_slot'
             ) ]
+        
+    def transation_to(self, new_status):
+        pass
         
     def __str__(self):
         return f"Appointment: {self.customer.username} - {self.professional.username} - {self.service.service_name} - {self.appointment_date}"

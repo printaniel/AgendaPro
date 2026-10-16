@@ -7,10 +7,13 @@ from management_system.services.service_exceptions import (
     InvalidRole,
     MissingRequiredField,
     NotAllowedAction)
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
+from django.db import transaction
+
+LATE_CANCELLED_TIME = timedelta(days = 2)
 
 class AppointmentService:
-
+    
     @staticmethod
     def create_appointment(user: User, data: dict) -> Appointment :
         AppointmentService._validate_customer_professional_role(user)
@@ -22,20 +25,24 @@ class AppointmentService:
     @staticmethod 
     def edit_appointment(appointment: Appointment, data: dict, user: User):
         AppointmentService._validate_customer_professional_role(user)
-        AppointmentService._validate_actor_cannot_change_own_role_field (user, data)
-        professional, customer, service, appointment_date = AppointmentService._resolve_all_for_update(user, data, appointment)
-        AppointmentService._validate_professional_doesnt_have_service(service, professional)
+        appointment_date = data.get("appointment_date")
+        professional = data.get("professional")
         appointment.professional = professional
-        appointment.customer = customer
-        appointment.service = service
         appointment.appointment_date = appointment_date
         AppointmentService._validate_unique_appointment(appointment)
         appointment.save()
 
     @staticmethod
-    def cancel_appointment(appointment: Appointment):
-        appointment.cancelled = True
-        appointment.save()
+    @transaction.atomic
+    def cancel_appointment(appointment: Appointment, now = None):     
+        now = now or timezone.now()
+        late_cancelled = appointment.appointment_date - now < LATE_CANCELLED_TIME
+        if late_cancelled: 
+            appointment.status = appointment.Status.LATE_CANCELLED
+        else:
+            appointment.status = appointment.Status.CANCELLED
+        appointment.cancelled_at = now
+        appointment.save(update_fields=["status", "cancelled_at"])
 
     @staticmethod
     def get_not_cancelled_appointment(appointment_id: int):
@@ -77,12 +84,6 @@ class AppointmentService:
             raise MissingRequiredField('professional')
         if user.role == 'professional' and not data.get('customer'):
             raise MissingRequiredField('customer')
-        
-    def _validate_actor_cannot_change_own_role_field (user: User, data: dict):
-        if user.role == 'customer' and data.get('customer'):
-            raise NotAllowedAction('edit customer')
-        elif user.role == 'professional' and data.get('professional'):
-            raise NotAllowedAction('edit professional')
     
     def _validate_unique_appointment(appointment: Appointment):
         appointments = Appointment.objects.filter(
