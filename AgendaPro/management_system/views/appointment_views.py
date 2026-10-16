@@ -52,12 +52,13 @@ class AppointmentRetrieveView(RetrieveAPIView):
     serializer_class = AppointmentSerializer
 
 class AppointmentUpdateView(APIView):
+
     permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
 
     def patch(self, request, pk):
         
         try:
-            appointment = AppointmentService.get_appointment(pk)
+            appointment = AppointmentService.get_not_cancelled_appointment(pk)
         except EntityNotFound as e:
             return Response({"error":str(e)}, status = e.status)
         
