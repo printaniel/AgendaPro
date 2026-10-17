@@ -9,13 +9,13 @@ from management_system.services.professional_services import ProfessionalService
 
 
 class UserListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 class RoleSeparetedUserListView(APIView):
 
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     def get(self, request):
 
         professionals = ProfessionalServices.get_professionals()

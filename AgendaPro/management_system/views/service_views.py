@@ -4,7 +4,7 @@ from management_system.models import Service
 from management_system.serializers import ServiceSerializer
 
 class ServiceCreateView(CreateAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
@@ -20,10 +20,10 @@ class ServiceRetrieveView(RetrieveAPIView):
     serializer_class = ServiceSerializer
 
 class ServiceUpdateView(UpdateAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
 
 class ServiceDestroyView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Service.objects.all()

@@ -13,7 +13,7 @@ from management_system.services.service_exceptions import (
     AppointmentConflict,
     MissingRequiredField,
     NotAllowedAction)
-from management_system.permissions import IsAppointmentOwnerAdmin
+from management_system.permissions import IsAppointmentOwnerOrAdmin
 from django.db.utils import IntegrityError
 from django.db import transaction
 
@@ -41,19 +41,19 @@ class AppointmentCreateView(APIView):
 
 
 class AppointmentListView(ListAPIView):
-    permission_classes = [IsAuthenticated, IsAdminUser]
+    permission_classes = [IsAdminUser]
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
 
 
 class AppointmentRetrieveView(RetrieveAPIView):
-    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerOrAdmin]
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
 
 class AppointmentUpdateView(APIView):
 
-    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerOrAdmin]
 
     def patch(self, request, pk):
         
@@ -80,7 +80,7 @@ class AppointmentUpdateView(APIView):
 
 class AppointmentCancelView(APIView):
 
-    permission_classes = [IsAuthenticated, IsAppointmentOwnerAdmin]
+    permission_classes = [IsAuthenticated, IsAppointmentOwnerOrAdmin]
     def post(self, request, pk):
         try:
             appointment = AppointmentService.get_not_cancelled_appointment(pk)

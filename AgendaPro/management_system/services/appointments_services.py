@@ -19,7 +19,7 @@ class AppointmentService:
         AppointmentService._validate_customer_professional_role(user)
         AppointmentService._validate_required_actor_fields(user, data)
         professional, customer, service, appointment_date  = AppointmentService._resolve_all_for_create(user, data)
-        AppointmentService.validate_professional_doesnt_have_service(service = service,professional = professional)  
+        AppointmentService.ensure_professional_offers_service(service = service,professional = professional)  
         return Appointment.objects.create(professional = professional, customer = customer, appointment_date = appointment_date, service = service)
     
     @staticmethod 
@@ -94,7 +94,7 @@ class AppointmentService:
         if appointments.exists():
             raise AppointmentConflict
 
-    def _validate_professional_doesnt_have_service(service:Service, professional: User):
+    def ensure_professional_offers_service(service:Service, professional: User):
         if not professional.professional_services.filter(service = service).exists():
             raise ProfessionalDoesNotOfferService  
     

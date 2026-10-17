@@ -23,13 +23,13 @@ class IsCustomerOrAdmin(BasePermission):
     
 class IsOwnerOrAdmin(BasePermission):
     
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view, user_2):
         
         if request.user.is_staff:
              return True      
-        return request.user == obj
+        return request.user == user_2
 
-class IsAppointmentOwnerAdmin(BasePermission):
+class IsAppointmentOwnerOrAdmin(BasePermission):
 
     def has_object_permission(self, request, view, appointment: Appointment):
         if request.user.is_staff:
@@ -37,7 +37,7 @@ class IsAppointmentOwnerAdmin(BasePermission):
 
         return request.user == appointment.professional or request.user == appointment.customer
     
-class IsProfessionalServiceOwnerAdmin(BasePermission):
+class IsProfessionalServiceOwnerOrAdmin(BasePermission):
     
     def has_object_permission(self, request, view, professional_service: ProfessionalService):
         if request.user.is_staff:

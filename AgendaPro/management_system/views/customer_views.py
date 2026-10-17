@@ -45,7 +45,7 @@ class CustomerDestroyView(APIView):
            customer = CustomerServices.get_active_customer_by_id(pk)
         except EntityNotFound as e:
             return Response({"error": str(e)}, status = e.status)
-
+        
         CustomerServices.deactivate(customer)
         return Response(status = status.HTTP_200_OK)
 
