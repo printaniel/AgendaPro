@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from management_system.models import User
 from management_system.serializers import UserSerializer, PublicProfessionalSerializer
 from management_system.permissions import IsProfessionalOrAdmin, IsOwnerOrAdmin
+from management_system.services.professional_services import ProfessionalServices
 
 class ProfessionalCreateView(APIView):
     
@@ -35,6 +36,16 @@ class ProfessionalUpdateView(UpdateAPIView):
     queryset = User.objects.filter(role = 'professional')
     serializer_class = UserSerializer
 
-class ProfessionalDestroyView(DestroyAPIView):
+class ProfessionalDestroyView(APIView):
     permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsOwnerOrAdmin]
-    queryset = User.objects.filter(role = 'professional')
+    
+    def delete(self, request, pk):
+
+        try:
+            user = ProfessionalServices.get_active_by_id(pk)
+        except EntityNotFound as e:
+            return Response({"error":str(e)}, status = e.status)
+        
+        ProfessionalService.deactivate(user)
+        return Response(status = status.HTTP_200_OK)
+        
