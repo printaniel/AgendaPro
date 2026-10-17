@@ -29,8 +29,8 @@ class Service(models.Model):
         return self.service_name
     
 class ProfessionalService(models.Model): 
-    professional = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'professional_services')
-    service = models.ForeignKey(Service, on_delete = models.CASCADE)
+    professional = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'professional_services')
+    service = models.ForeignKey(Service, on_delete = models.PROTECT)
     price = models.DecimalField(max_digits = 10, decimal_places = 2)
     duration = models.DurationField()
     description = models.TextField()
@@ -49,9 +49,9 @@ class Appointment(models.Model):
         COMPLETED = "completed", "Completed"
         NO_SHOW = "no_show", "No show"
 
-    customer = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_customer')
-    professional = models.ForeignKey(User, on_delete = models.CASCADE, related_name = 'appointments_as_professional')
-    service = models.ForeignKey(Service, on_delete = models.CASCADE)
+    customer = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'appointments_as_customer')
+    professional = models.ForeignKey(User, on_delete = models.PROTECT, related_name = 'appointments_as_professional')
+    service = models.ForeignKey(Service, on_delete = models.PROTECT)
     appointment_date = models.DateTimeField()
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.CONFIRMED)
     create_at = models.DateTimeField(auto_now_add = True)
