@@ -65,6 +65,7 @@ class Appointment(models.Model):
             name = 'unique_appointment_slot'
             ) ]
         
+    #TODO
     def transation_to(self, new_status):
         pass
         
