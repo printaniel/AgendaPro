@@ -91,11 +91,11 @@ class AppointmentSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('The appointment date must be in the future')
         return appointment_date
 
-class AppointmentUpdateSerializer(serializer.ModelSerializer):
+class AppointmentUpdateSerializer(serializers.ModelSerializer):
 
     customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
     professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
-    cancelled = serializer.BooleanField(read_only = True)
+    cancelled = serializers.BooleanField(read_only = True)
 
     class Meta: 
         model = Appointment

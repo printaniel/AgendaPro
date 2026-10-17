@@ -36,7 +36,17 @@ class CustomerUpdateView(UpdateAPIView):
     queryset = User.objects.filter(role = 'customer')
     serializer_class = UserSerializer
 
-class CustomerDestroyView(DestroyAPIView):
+class CustomerDestroyView(APIView):
     permission_classes = [IsAuthenticated, IsCustomerOrAdmin, IsOwnerOrAdmin]
-    queryset = User.objects.filter(role = 'customer')
-    serializer_class = UserSerializer
+    
+    def delete(self, request, pk):
+
+        try:
+           customer = CustomerServices.get_active_customer_by_id(pk)
+        except EntityNotFound as e:
+            return Response({"error": str(e)}, status = e.status)
+
+        CustomerServices.deactivate(customer)
+        return Response(status = status.HTTP_200_OK)
+
+
