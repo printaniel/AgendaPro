@@ -26,7 +26,7 @@ class TestUserList():
         
     def test_customer_cannot_list_users(self,customer, customer_client):        
   
-        url = reverse('user-list')       
+        url = reverse('user_list')       
         response = customer_client.get(url)
         
         assert response.status_code == 403
@@ -35,16 +35,16 @@ class TestUserList():
     
     def test_professional_cannot_list_users(self, professional, professional_client):
         
-        url = reverse('user-list')       
+        url = reverse('user_list')       
         response = professional_client.get(url)
         
         assert response.status_code == 403
         assert response.wsgi_request.user == professional
         
            
-    def test_anonymus_user_cannot_list_users(self, api_client):
+    def test_annonymus_user_cannot_list_users(self, api_client):
         
-        url = reverse('user-list')       
+        url = reverse('user_list')       
         response = api_client.get(url) 
         
         assert response.status_code == 401
