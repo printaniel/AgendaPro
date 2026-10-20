@@ -168,3 +168,54 @@ class TestCustomerUpdateView:
         
         assert response.status_code == 400
 
+@pytest.mark.django_db
+class TestCustomerDestroyView:
+     
+    @pytest.fixture(autouse = True)
+    def setup(self, customer):
+        self.customer = customer
+        self.url = reverse('customer_cancel', args = [customer.id])
+        
+    def test_owner_access(self, customer_client):     
+        response = customer_client.delete(self.url)
+            
+        self.customer.refresh_from_db()
+        assert response.status_code == 204
+        assert self.customer.is_active == False
+        
+    
+    def test_admin_acess(self, admin_client):
+        response = admin_client.delete(self.url)
+                    
+        self.customer.refresh_from_db()
+        assert response.status_code == 204
+        assert self.customer.is_active == False
+        
+    def test_another_customer_cannot_access(self, user_client_maker):   
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.delete(self.url)
+        
+        self.customer.refresh_from_db()  
+        assert response.status_code == 403
+        assert self.customer.is_active == True
+        
+    def test_professional_cannot_access(self, professional_client):
+        response = professional_client.delete(self.url)
+        
+        self.customer.refresh_from_db()          
+        assert response.status_code == 403
+        assert self.customer.is_active == True
+         
+    def test_annonymus_user_cannot_access(self, api_client):
+        response = api_client.delete(self.url)
+        
+        self.customer.refresh_from_db()                    
+        assert response.status_code == 401
+        assert self.customer.is_active == True
+            
+    def test_non_existing_customer(self, admin_client):
+        response = admin_client.delete(reverse('customer_cancel', args = [999999]))
+    
+        assert response.status_code == 404
+
+
