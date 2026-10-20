@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from management_system.tests.factories import ProfessionalFactory
-from management_system.tests.conftest import admin, admin_client
+from management_system.tests.conftest import admin, admin_client, user_client_maker
 
 CORRECT_DATA = {
     "username": "Aniel",
@@ -141,17 +141,46 @@ class TestProfessionalUpdateView:
         response = api_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password})
         
         assert response.status_code == 401
-        
-class TestProfessionalDestroy:
+   
+@pytest.mark.django_db     
+class TestProfessionalDestroyView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, professional):
+        self.professional = professional
+        self.url = reverse('professional_destroy', args = [professional.id])
     
     def test_owner_can_cancel(self, professional_client):
-        pass
+
+        response = professional_client.delete(self.url)       
+        self.professional.refresh_from_db()
+        
+        assert response.status_code == 204
+        assert response.wsgi_request.user == self.professional
+        assert self.professional.is_active == False
     
-    def test_admin_can_cancel():
-        pass
+    def test_admin_can_cancel(self, admin_client):
+        
+        response = admin_client.delete(self.url)
+        self.professional.refresh_from_db()
+        
+        assert response.status_code == 204
+        assert self.professional.is_active == False
     
-    def customer_cannot_cancel():
-        pass
+    def test_customer_cannot_cancel(self, customer_client):
+        
+        response = customer_client.delete(self.url)
+        self.professional.refresh_from_db()
+        
+        assert response.status_code == 403
+        assert self.professional.is_active == True
     
-    def another_professional_cannot_cancel():
-        pass
+    def test_another_professional_cannot_cancel(self, user_client_maker):
+        
+        another_professional = ProfessionalFactory()
+        another_professional_client = user_client_maker(another_professional)
+        
+        response = another_professional_client.delete(self.url)
+        self.professional.refresh_from_db()
+        assert response.status_code == 403
+        assert self.professional.is_active == True

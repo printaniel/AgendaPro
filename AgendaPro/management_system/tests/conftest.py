@@ -45,5 +45,15 @@ def api_client():
     return APIClient()
 
 
+@pytest.fixture
+def user_client_maker():
+    def _make(user):
+        client = APIClient()
+        refresh = RefreshToken.for_user(user)
+        client.credentials(HTTP_AUTHORIZATION = f"Bearer {refresh.access_token}")
+        return client
+    return _make
+
+
         
             

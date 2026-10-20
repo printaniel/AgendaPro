@@ -9,12 +9,12 @@ class ProfessionalServices:
 
     @staticmethod
     def get_professional(id: int):
-        return User.objects.filter(role = 'professional', id = id)
+        return User.objects.filter(role = 'professional', id = id).first()
 
     
     @staticmethod
     def get_active_by_id(id: int):
-        user = User.objects.filter(role = 'professional', id = id)
+        user = User.objects.filter(role = 'professional', id = id).first()
         if not user:
             raise EntityNotFound('professional', id)
         return user
