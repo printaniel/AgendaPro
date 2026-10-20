@@ -1,6 +1,6 @@
 import factory
 from factory.django import DjangoModelFactory
-from management_system.models import (User, Service)
+from management_system.models import (User)
 
 DEFAULT_PASSWORD = 'hesoyam2'
 
@@ -23,7 +23,11 @@ class ProfessionalFactory(UserFactory):
 class CustomerFactory(UserFactory):
     role = 'customer'
     
-
+class AdminFactory(UserFactory):
+  
+    @classmethod
+    def _create(cls, model_class, *args, **kwargs):
+        return cls._get_manager(model_class).create_superuser(*args, **kwargs)
     
 
     
