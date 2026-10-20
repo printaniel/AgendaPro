@@ -15,7 +15,9 @@ class UserFactory(DjangoModelFactory):
     
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        return cls._get_manager(model_class).create_user(*args, **kwargs)
+        user = cls._get_manager(model_class).create_user(*args, **kwargs)
+        user.raw_password = DEFAULT_PASSWORD
+        return user
     
 class ProfessionalFactory(UserFactory):    
     role = 'professional'

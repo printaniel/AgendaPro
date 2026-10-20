@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse
-from  management_system.tests.factories import ProfessionalFactory
+from management_system.tests.factories import ProfessionalFactory
+from management_system.tests.conftest import admin, admin_client
 
 CORRECT_DATA = {
     "username": "Aniel",
@@ -71,27 +72,79 @@ class TestProfessionalRetrieveView():
         assert 'password' not in response.data
         assert 'email'  not in response.data
         
-        
-class TestProfessionalUpdateView():
-    
-    def test_owner_can_update():
-        pass
-    
-    def test_admin_can_update():
-        pass
-    
-    def customer_cannot_udpate():
-        pass
-    
-    def another_professional_cannot_update():
-        pass
-    
-    def update_with_incorrect_data():
-        pass
 
-class TestProfessionalDesroy():
+@pytest.mark.django_db        
+class TestProfessionalUpdateView:
     
-    def test_owner_can_cancel():
+    @pytest.fixture(autouse = True)
+    def setup(self, db, professional):
+        self.new_username = 'Raul'
+        self.new_password = 'croquetas'
+        self.professional = professional
+        self.url = reverse('professional_update', args = [professional.id])
+    
+    def test_owner_can_update(self, professional, professional_client):
+        
+        response = professional_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password })       
+        professional.refresh_from_db()
+        
+        assert response.status_code == 200
+        assert professional.username == self.new_username
+        assert professional.check_password(self.new_password)
+    
+    def test_admin_can_update(self, admin_client, professional):
+        
+        response = admin_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password })       
+        professional.refresh_from_db()
+                
+        assert response.status_code == 200
+        assert professional.username == self.new_username
+        assert professional.check_password(self.new_password)
+    
+    def test_customer_cannot_udpate(self, professional, customer_client):
+        
+        old_username = professional.username
+        old_password = professional.raw_password
+                
+        response = customer_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password })              
+        professional.refresh_from_db()
+        
+        assert response.status_code == 403
+        assert professional.username == old_username
+        assert professional.check_password(old_password)
+    
+    def test_another_professional_cannot_update(self, professional_client):
+        
+        professional_to_update = ProfessionalFactory()
+        old_username = professional_to_update.username
+        old_password = professional_to_update.raw_password
+        
+        url = reverse('professional_update', args = [professional_to_update.id])
+        response = professional_client.patch(url, data = {"username": self.new_username, "password": self.new_password })
+                  
+        professional_to_update.refresh_from_db()
+          
+        assert response.status_code == 403 
+        assert professional_to_update.username == old_username
+        assert professional_to_update.check_password(old_password)    
+        
+    @pytest.mark.parametrize("payload", [
+            ({"username": " ", "password": "hesoyam2", "email": "anielvarela64@gmail.com"}), # username vacio
+            ({"username": "Aniel", "password": "", "email": "anielvarela64@gmail.com"}), # password vacia 
+            ({"username": "Aniel", "password": "hesoyam2", "email": "anielgmail.com"}), # email sin @ 
+        ])
+    def test_update_with_incorrect_data(self, payload, professional_client):
+        response = professional_client.patch(self.url, data = payload)        
+        assert response.status_code == 400
+        
+    def test_annonymus_cannot_update(self, api_client):
+        response = api_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password})
+        
+        assert response.status_code == 401
+        
+class TestProfessionalDestroy:
+    
+    def test_owner_can_cancel(self, professional_client):
         pass
     
     def test_admin_can_cancel():
