@@ -56,3 +56,49 @@ class TestProfessionalListView:
         assert 'password' not in response.data[1]
         
 
+@pytest.mark.django_db
+class TestProfessionalRetrieveView():
+    
+    def test_professional_retrieve(self, api_client):
+        professional0 =  ProfessionalFactory()
+        url = reverse('professional_retrieve', args = [professional0.id])
+        
+        response = api_client.get(url)
+        
+        assert response.status_code == 200
+        assert response.data['username'] == professional0.username
+        assert 'services' in response.data
+        assert 'password' not in response.data
+        assert 'email'  not in response.data
+        
+        
+class TestProfessionalUpdateView():
+    
+    def test_owner_can_update():
+        pass
+    
+    def test_admin_can_update():
+        pass
+    
+    def customer_cannot_udpate():
+        pass
+    
+    def another_professional_cannot_update():
+        pass
+    
+    def update_with_incorrect_data():
+        pass
+
+class TestProfessionalDesroy():
+    
+    def test_owner_can_cancel():
+        pass
+    
+    def test_admin_can_cancel():
+        pass
+    
+    def customer_cannot_cancel():
+        pass
+    
+    def another_professional_cannot_cancel():
+        pass
