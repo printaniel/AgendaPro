@@ -34,3 +34,25 @@ class TestProfessionalCreateView:
         
         assert response.status_code == 400
         
+
+@pytest.mark.django_db
+class TestProfessionalListView:
+    
+    def test_professional_list(self, api_client):
+        
+        professional0 = ProfessionalFactory()
+        professional1 = ProfessionalFactory()
+        
+        url = reverse('professional_list')
+        response = api_client.get(url)
+                
+        assert response.status_code == 200
+        assert len(response.data) == 2
+        assert response.data[0]['username'] == professional0.username
+        assert 'services' in response.data[0]
+        assert 'password' not in response.data[0]
+        assert response.data[1]['username'] == professional1.username
+        assert 'services' in response.data[1]
+        assert 'password' not in response.data[1]
+        
+
