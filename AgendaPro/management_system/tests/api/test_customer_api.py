@@ -40,3 +40,30 @@ class TestCustomerCreateView:
         
         assert response.status_code == 400
         
+class TestCustomerListView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self):
+        self.url = reverse('user_list')
+        
+    def test_admin_access(self, admin_client):     
+        customer1 = CustomerFactory()
+        customer2 = CustomerFactory()
+        
+        response = admin_client.get(self.url)      
+        assert response.status_code == 200
+        assert len(response.data) == 3
+    
+    
+    def test_customer_cannot_access(self, customer_client):      
+        response = customer_client.get(self.url)
+        assert response.status_code == 403
+    
+    def test_professional_cannot_access(self, professional_client):  
+        response = professional_client.get(self.url)         
+        assert response.status_code == 403
+    
+    def test_annonymus_user_cannot_access(self, api_client):       
+        response = api_client.get(self.url)                
+        assert response.status_code == 401
+
