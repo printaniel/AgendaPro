@@ -67,3 +67,46 @@ class TestCustomerListView:
         response = api_client.get(self.url)                
         assert response.status_code == 401
 
+class TestCustomerRetrieveView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, customer):
+        self.customer = customer
+        self.url = reverse('customer_retrieve', args = [customer.id])
+    
+    def test_owner_access(self, customer_client):     
+        response = customer_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert response.data['username'] == self.customer.username
+        assert response.data['email'] == self.customer.email
+        assert 'password' not in response.data 
+    
+    def test_admin_acess(self, admin_client):
+        response = admin_client.get(self.url)
+                
+        assert response.status_code == 200
+        assert response.data['username'] == self.customer.username
+        assert response.data['email'] == self.customer.email
+        assert 'password' not in response.data
+    
+    def test_another_customer_cannot_access(self, user_client_maker):   
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.get(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_professional_cannot_access(self, professional_client):
+        response = professional_client.get(self.url)
+                
+        assert response.status_code == 403
+     
+    def test_annonymus_user_cannot_access(self, api_client):
+        response = api_client.get(self.url)
+                        
+        assert response.status_code == 401
+        
+    def test_non_existing_customer(self, admin_client):
+        response = admin_client.get(reverse('customer_retrieve', args = [999999]))
+        assert response.status_code == 404
+        
