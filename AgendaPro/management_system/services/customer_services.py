@@ -8,7 +8,7 @@ class CustomerServices:
         return User.objects.filter(role = 'customer')
 
     @staticmethod
-    def deactivate(customer: Customer):
+    def deactivate(customer: User):
         customer.is_active = False
         customer.save()
 
@@ -18,7 +18,7 @@ class CustomerServices:
 
     @staticmethod
     def get_active_customer_by_id(id: int):
-        user = User.objects.filter(id = id ,role = 'customer', is_active = True)
+        user = User.objects.filter(id = id ,role = 'customer', is_active = True).first()
         if not user:
             raise EntityNotFound("customer", id)
         return user
