@@ -109,4 +109,62 @@ class TestCustomerRetrieveView:
     def test_non_existing_customer(self, admin_client):
         response = admin_client.get(reverse('customer_retrieve', args = [999999]))
         assert response.status_code == 404
+class TestCustomerUpdateView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, customer):
+        self.customer = customer
+        self.new_username = "Raul"
+        self.new_password = "croquetas"
+        self.url = reverse('customer_update', args = [customer.id])
+    
+    def test_owner_access(self, customer_client):     
+        response = customer_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password})
         
+        self.customer.refresh_from_db()
+        assert response.status_code == 200
+        assert self.customer.username == self.new_username
+        assert self.customer.check_password(self.new_password)
+        assert self.customer.password != self.new_password
+    
+
+    def test_admin_acess(self, admin_client):
+        response = admin_client.patch(self.url, data = {"username": self.new_username, "password": self.new_password})
+                
+        self.customer.refresh_from_db()
+        assert response.status_code == 200
+        assert self.customer.username == self.new_username
+        assert self.customer.check_password(self.new_password)
+        assert self.customer.password != self.new_password
+    
+    def test_another_customer_cannot_access(self, user_client_maker):   
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.patch(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_professional_cannot_access(self, professional_client):
+        response = professional_client.patch(self.url)
+                
+        assert response.status_code == 403
+     
+    def test_annonymus_user_cannot_access(self, api_client):
+        response = api_client.patch(self.url)
+                        
+        assert response.status_code == 401
+        
+    def test_non_existing_customer(self, admin_client):
+        response = admin_client.patch(reverse('customer_update', args = [999999]))
+
+        assert response.status_code == 404
+     
+    @pytest.mark.parametrize("payload", [
+        ({"username": " ", "password": "hesoyam2", "email": "anielvarela64@gmail.com"}), # username vacio
+        ({"username": "Aniel", "password": "", "email": "anielvarela64@gmail.com"}), # password vacia 
+        ({"username": "Aniel", "password": "hesoyam2", "email": "anielgmail.com"}), # email sin @ 
+        ])   
+    def test_update_with_incorrect_data(self,payload ,admin_client):
+        response = admin_client.patch(self.url, data = payload )
+        
+        assert response.status_code == 400
+
