@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from management_system.serializers import UserSerializer
 from management_system.models import User
 from management_system.permissions import IsCustomerOrAdmin, IsOwnerOrAdmin
+from management_system.services.customer_services import CustomerServices
+from management_system.services.service_exceptions import EntityNotFound
 
 
 class CustomerCreateView(APIView):
