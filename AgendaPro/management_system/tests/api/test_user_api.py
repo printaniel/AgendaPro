@@ -17,7 +17,7 @@ class TestUserList():
         profesisonal_db = ProfessionalFactory()
         url = reverse('user-list')
         
-        response = admin_client.get(reverse('user-list'))
+        response = admin_client.get(url)
         
         assert response.status_code == 200     
         assert response.wsgi_request.user == admin
@@ -25,33 +25,27 @@ class TestUserList():
         assert len(response.data) == 3
         
     def test_customer_cannot_list_users(self,customer, customer_client):        
-        customer_db = CustomerFactory()
-        profesisonal_db = ProfessionalFactory()
-        
+  
         url = reverse('user-list')       
-        response = customer_client.get(reverse('user-list'))
+        response = customer_client.get(url)
         
         assert response.status_code == 403
         assert response.wsgi_request.user == customer
         
     
     def test_professional_cannot_list_users(self, professional, professional_client):
-        customer_db = CustomerFactory()
-        profesisonal_db = ProfessionalFactory()
         
         url = reverse('user-list')       
-        response = professional_client.get(reverse('user-list'))
+        response = professional_client.get(url)
         
         assert response.status_code == 403
         assert response.wsgi_request.user == professional
         
            
     def test_anonymus_user_cannot_list_users(self, api_client):
-        customer_db = CustomerFactory()
-        profesisonal_db = ProfessionalFactory()
         
         url = reverse('user-list')       
-        response = api_client.get(reverse('user-list')) 
+        response = api_client.get(url) 
         
         assert response.status_code == 401
         
