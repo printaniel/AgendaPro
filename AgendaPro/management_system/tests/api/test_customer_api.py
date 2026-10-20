@@ -40,6 +40,7 @@ class TestCustomerCreateView:
         
         assert response.status_code == 400
         
+               
 class TestCustomerListView:
     
     @pytest.fixture(autouse = True)
@@ -109,6 +110,8 @@ class TestCustomerRetrieveView:
     def test_non_existing_customer(self, admin_client):
         response = admin_client.get(reverse('customer_retrieve', args = [999999]))
         assert response.status_code == 404
+        
+
 class TestCustomerUpdateView:
     
     @pytest.fixture(autouse = True)

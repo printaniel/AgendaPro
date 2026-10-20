@@ -72,6 +72,12 @@ class TestProfessionalRetrieveView():
         assert 'password' not in response.data
         assert 'email'  not in response.data
         
+    def test_non_existing_professional(self, api_client):   
+        url = reverse('professional_retrieve', args = [9999000000])               
+        response = api_client.get(url)
+        
+        assert response.status_code == 404
+        
 
 @pytest.mark.django_db        
 class TestProfessionalUpdateView:
