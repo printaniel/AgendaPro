@@ -46,6 +46,7 @@ class ProfessionalDestroyView(APIView):
         except EntityNotFound as e:
             return Response({"error":str(e)}, status = e.status)
         
+        self.check_object_permissions(request, user)
         ProfessionalServices.deactivate(user)
-        return Response(status = status.HTTP_200_OK)
+        return Response(status = status.HTTP_204_NO_CONTENT)
         
