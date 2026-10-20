@@ -15,14 +15,14 @@ urlpatterns = [
     path('token/',TokenObtainPairView.as_view(), name = 'token-obtain'),
     path('token/refresh/', TokenRefreshView.as_view(), name = 'refresh'),
     # User
-    path('user/list/', user_views.UserListView.as_view(), name = 'user-list'),
-    path('user/role-list/', user_views.RoleSeparetedUserListView.as_view(), name = 'user-role-list'),
+    path('user/list/', user_views.UserListView.as_view(), name = 'user_list'),
+    path('user/role-list/', user_views.RoleSeparetedUserListView.as_view(), name = 'user_role_list'),
     # Professional
-    path('user/professional-create/', professional_views.ProfessionalCreateView.as_view(), name = 'professional-create'),
-    path('user/professional-list/', professional_views.ProfessionalListView.as_view(), name = 'professional-list'),
-    path('user/<int:pk>/professional-retrieve/', professional_views.ProfessionalRetrieveView.as_view(), name = 'professional-retrieve'),
-    path('user/<int:pk>/professional-update/', professional_views.ProfessionalUpdateView.as_view(), name = 'professional-update'),
-    path('user/<int:pk>/professional-destroy/', professional_views.ProfessionalDestroyView.as_view(), name = 'professional-destroy'),
+    path('user/professional-create/', professional_views.ProfessionalCreateView.as_view(), name = 'professional_create'),
+    path('user/professional-list/', professional_views.ProfessionalListView.as_view(), name = 'professional_list'),
+    path('user/<int:pk>/professional-retrieve/', professional_views.ProfessionalRetrieveView.as_view(), name = 'professional_retrieve'),
+    path('user/<int:pk>/professional-update/', professional_views.ProfessionalUpdateView.as_view(), name = 'professional_update'),
+    path('user/<int:pk>/professional-destroy/', professional_views.ProfessionalDestroyView.as_view(), name = 'professional_destroy'),
     # Customer
     path('user/customer-create/', customer_views.CustomerCreateView.as_view(), name = 'customer-create'),
     path('user/customer-list/', customer_views.CustomerListView.as_view(), name = 'customer-list'),

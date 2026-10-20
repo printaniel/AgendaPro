@@ -7,13 +7,13 @@ from management_system.models import User
 from management_system.serializers import UserSerializer, PublicProfessionalSerializer
 from management_system.permissions import IsProfessionalOrAdmin, IsOwnerOrAdmin
 from management_system.services.professional_services import ProfessionalServices
+from management_system.services.service_exceptions import EntityNotFound
 
 class ProfessionalCreateView(APIView):
     
     permission_classes = [AllowAny]  
      
     def post(self, request):
-               
         serializer = UserSerializer(data = request.data)     
         if serializer.is_valid():
             serializer.save(role = 'professional')
@@ -46,6 +46,6 @@ class ProfessionalDestroyView(APIView):
         except EntityNotFound as e:
             return Response({"error":str(e)}, status = e.status)
         
-        ProfessionalService.deactivate(user)
+        ProfessionalServices.deactivate(user)
         return Response(status = status.HTTP_200_OK)
         
