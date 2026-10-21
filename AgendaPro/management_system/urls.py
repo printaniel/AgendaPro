@@ -30,11 +30,11 @@ urlpatterns = [
     path('user/<int:pk>/customer-update/', customer_views.CustomerUpdateView.as_view(), name = 'customer_update'),
     path('user/<int:pk>/customer-destroy/', customer_views.CustomerDestroyView.as_view(), name = 'customer_cancel'),
     # Service
-    path('service/service-list/', service_views.ServiceListView.as_view(),name = 'services-list'),
-    path('service/<int:pk>/service-retrieve/',service_views.ServiceRetrieveView.as_view(),name = 'service-retrieve'),
-    path('service/service-create/', service_views.ServiceCreateView.as_view(),name = 'service-create'),
-    path('service/<int:pk>/service-update/',service_views.ServiceUpdateView.as_view(), name = 'service-update'),
-    path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service-destroy'), 
+    path('service/service-list/', service_views.ServiceListView.as_view(),name = 'services_list'),
+    path('service/<int:pk>/service-retrieve/',service_views.ServiceRetrieveView.as_view(),name = 'service_retrieve'),
+    path('service/service-create/', service_views.ServiceCreateView.as_view(),name = 'service_create'),
+    path('service/<int:pk>/service-update/',service_views.ServiceUpdateView.as_view(), name = 'service_update'),
+    path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service_destroy'), 
     # ProfessionalService
     path('service/professionalservice-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'create-professional-service'),
     path('service/professionalservice-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservices-list'),
