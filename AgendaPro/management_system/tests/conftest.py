@@ -2,7 +2,8 @@ import pytest
 from management_system.tests.factories import (
     ProfessionalFactory,
     CustomerFactory,
-    AdminFactory)
+    AdminFactory,
+    ServiceFactory)
 from management_system.models import User
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -53,6 +54,10 @@ def user_client_maker():
         client.credentials(HTTP_AUTHORIZATION = f"Bearer {refresh.access_token}")
         return client
     return _make
+
+@pytest.fixture
+def service():
+    return ServiceFactory()
 
 
         

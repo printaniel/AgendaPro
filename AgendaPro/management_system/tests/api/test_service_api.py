@@ -59,3 +59,36 @@ class TestServiceUpdateView:
         
         assert response.status_code == 400
     
+@pytest.mark.django_db
+class TestServiceDestroyView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, service):
+        self.url = reverse('service_destroy', args = [service.id])
+    
+    def test_admin_access(self, admin_client):    
+        response = admin_client.delete(self.url)
+        
+        assert response.status_code == 204
+        assert Service.objects.count() == 0
+        
+    def test_customer_cannot_access(self, customer_client):
+        response = customer_client.delete(self.url)
+                
+        assert response.status_code == 403
+        
+    def test_professional_access(self, professional_client):
+        response = professional_client.delete(self.url)
+        
+        assert response.status_code == 403
+        
+    def test_annonymus_user_access(self, api_client):
+        response = api_client.delete(self.url)
+        
+        assert response.status_code == 401
+     
+    def test_service_doesnt_exists(self, admin_client):
+        response = admin_client.delete(reverse('service_destroy', args=[99999999]))
+        
+        assert response.status_code == 404
+        assert Service.objects.count() == 1

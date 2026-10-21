@@ -1,6 +1,6 @@
 import factory
 from factory.django import DjangoModelFactory
-from management_system.models import (User)
+from management_system.models import (User, Service)
 
 DEFAULT_PASSWORD = 'hesoyam2'
 
@@ -31,6 +31,11 @@ class AdminFactory(UserFactory):
     def _create(cls, model_class, *args, **kwargs):
         return cls._get_manager(model_class).create_superuser(*args, **kwargs)
     
+class ServiceFactory(DjangoModelFactory):
+    class Meta:
+        model = Service
+    
+    service_name = factory.Sequence(lambda n: f"service{n}")
 
     
 
