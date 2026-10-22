@@ -55,17 +55,28 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 class ProfessionalServiceSerializer(serializers.ModelSerializer):
 
-    professional = serializers.StringRelatedField(read_only = True)
     id = serializers.IntegerField(read_only = True)
-    
+    professional = serializers.StringRelatedField(read_only = True)
+    description = serializers.CharField(required = True)
+    service_name = serializers.StringRelatedField(source = 'service')
+    professional = serializers.StringRelatedField()
+        
     class Meta:
         model = ProfessionalService
-        fields = ['id','professional','service', 'price', 'duration', 'description']
+        fields = ['id','professional','service_name', 'price', 'duration', 'description']
 
     def validate_price(self, price):
         if price < 0:
             raise serializers.ValidationError(detail = 'The price cannot be less than 0')
         return price
+    
+class ProfessionalServiceCreateSerializer(ProfessionalServiceSerializer):
+    service = serializers.PrimaryKeyRelatedField(queryset = Service.objects.all(), write_only = True)
+    
+    class Meta:
+        model = ProfessionalService
+        fields = ['id','professional','service_name','service', 'price', 'duration', 'description']
+    
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
