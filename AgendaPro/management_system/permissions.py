@@ -26,7 +26,8 @@ class IsOwnerOrAdmin(BasePermission):
     def has_object_permission(self, request, view, user_2):
         
         if request.user.is_staff:
-             return True      
+             return True
+
         return request.user == user_2
 
 class IsAppointmentOwnerOrAdmin(BasePermission):

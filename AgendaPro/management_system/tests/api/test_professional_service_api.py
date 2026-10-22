@@ -137,5 +137,36 @@ class TestProfessionalServiceUpdateView:
         assert response.status_code == 400
         assert self.professionalservice.price == old_price
 
+
+@pytest.mark.django_db
 class TestProfessionalServiceDestroyView:
-    pass
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, professionalservice):
+        self.professionalservice = professionalservice
+        self.url = reverse('professionalservice_destroy', args = [professionalservice.id])
+     
+    def test_owner_access(self, professional_client, professional):
+        response = professional_client.delete(self.url)
+        assert response.wsgi_request.user == professional
+        assert response.status_code == 204
+        assert ProfessionalService.objects.all().count() == 0
+        
+    def test_customer_cannot_access(self, customer_client):
+        response = customer_client.delete(self.url)
+        assert response.status_code == 403
+        assert ProfessionalService.objects.all().count() == 1
+    
+    def test_another_professional_cannot_access(self, user_client_maker):
+        another_professional = ProfessionalFactory()
+        another_professional_client = user_client_maker(another_professional)
+        response = another_professional_client.delete(self.url)
+        
+        assert response.status_code == 403
+        assert ProfessionalService.objects.all().count() == 1
+    
+    def test_annonymus_user_cannot_access(self, api_client):
+        response = api_client.delete(self.url)
+                
+        assert response.status_code == 401
+        assert ProfessionalService.objects.all().count() == 1

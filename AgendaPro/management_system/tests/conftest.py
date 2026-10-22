@@ -4,9 +4,10 @@ from management_system.tests.factories import (
     CustomerFactory,
     AdminFactory,
     ServiceFactory)
-from management_system.models import User
+from management_system.models import ProfessionalService
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
+from datetime import timedelta
 
 @pytest.fixture
 def professional(db):
@@ -58,6 +59,29 @@ def user_client_maker():
 @pytest.fixture
 def service():
     return ServiceFactory()
+
+@pytest.fixture
+def professionalservice(professional, service):
+    default_price = 1
+    default_duration = timedelta(minutes=1)
+    return ProfessionalService.objects.create(
+        professional = professional,
+        service = service,
+        price = default_price,
+        duration = default_duration,
+        description = "default description")
+    
+@pytest.fixture
+def professionalservice_maker():
+    def _maker(professional, service, price, duration, description = None):
+        return ProfessionalService.objects.create(
+            professional = professional,
+            service = service,
+            price = price,
+            duration = duration,
+            description = description if description else 'default description')
+    return _maker
+    
 
 
         

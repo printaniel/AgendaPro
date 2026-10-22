@@ -36,7 +36,3 @@ class ServiceFactory(DjangoModelFactory):
         model = Service
     
     service_name = factory.Sequence(lambda n: f"service{n}")
-
-    
-
-

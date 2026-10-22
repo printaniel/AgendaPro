@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, DestroyAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from management_system.serializers import ProfessionalServiceSerializer
-from management_system.permissions import IsProfessionalOrAdmin, IsOwnerOrAdmin, IsAppointmentOwnerOrAdmin
+from management_system.serializers import ProfessionalServiceSerializer, ProfessionalServiceCreateSerializer
+from management_system.permissions import IsProfessionalOrAdmin, IsProfessionalServiceOwnerOrAdmin
 from management_system.models import ProfessionalService
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
@@ -16,12 +16,12 @@ class ProfessionalServiceCreateView(APIView):
 
     def post(self, request):
 
-        serializer = ProfessionalServiceSerializer(data = request.data)
+        serializer = ProfessionalServiceCreateSerializer(data = request.data)
         if serializer.is_valid():
             try:
                 serializer.save(professional = request.user)
             except IntegrityError as e:
-                return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_409_CONFLICT)
             return Response(serializer.data, status = status.HTTP_201_CREATED)
         return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
 
@@ -37,12 +37,12 @@ class ProfessionalServiceRetrieveView(RetrieveAPIView):
     serializer_class = ProfessionalServiceSerializer
 
 class ProfessionalServiceUpdateView(APIView):
-    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsOwnerOrAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsProfessionalServiceOwnerOrAdmin]
 
     def patch(self, request, pk):
 
         professionalservice = get_object_or_404(ProfessionalService, pk = pk)
-        self.check_object_permissions(request, professionalservice.professional)
+        self.check_object_permissions(request, professionalservice)
         serializer = ProfessionalServiceSerializer(data = request.data, instance = professionalservice, partial =True)
 
         if serializer.is_valid():
@@ -55,6 +55,5 @@ class ProfessionalServiceUpdateView(APIView):
 
 
 class ProfessionalServiceDestroyView(DestroyAPIView):
-    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsAppointmentOwnerOrAdmin]
+    permission_classes = [IsAuthenticated, IsProfessionalOrAdmin, IsProfessionalServiceOwnerOrAdmin]
     queryset = ProfessionalService.objects.all()
-    serializer_class = ProfessionalServiceSerializer
