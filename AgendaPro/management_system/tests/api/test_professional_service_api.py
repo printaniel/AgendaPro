@@ -70,9 +70,29 @@ class TestProfessionalServiceListView:
         assert len(response.data) == 2
         
 
+@pytest.mark.django_db
 class TestProfessionalServiceRetrieveView:
-    pass
-
+    
+    @pytest.fixture(autouse = True)
+    def setUpt(self, professionalservice):
+        self.professionalservice = professionalservice
+        self.url = reverse('professionalservice_retrieve', args = [professionalservice.id])
+    
+    def test_get_professional_service(self, customer_client):
+        response = customer_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert response.json()['service_name'] == self.professionalservice.service.service_name
+        assert response.data['professional'] == self.professionalservice.professional.username
+        assert response.data['price'] == f'{self.professionalservice.price}.00'
+        assert response.data['description'] == self.professionalservice.description
+        
+            
+    def test_non_existing_professional_service(self, customer_client):
+        response = customer_client.get(reverse('professionalservice_retrieve', args = [99999999]))
+        
+        assert response.status_code == 404
+        
 class TestProfessionalServiceUpdateView:
     pass
 
