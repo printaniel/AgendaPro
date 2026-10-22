@@ -52,8 +52,23 @@ class TestProfessionalServiceCreateView:
         
         assert response.status_code == 409
 
+@pytest.mark.django_db
 class TestProfessionalServiceListView:
-    pass
+    
+    def test_list_professional_services(self, professionalservice_maker, user_client_maker):
+        # Arrange
+        professional0 = ProfessionalFactory()
+        professional_client = user_client_maker(professional0)
+        service0 = ServiceFactory()
+        service1 = ServiceFactory()
+        professionalservice0 = professionalservice_maker(professional0, service0, price = 1, duration = timedelta(minutes = 1))
+        professionalservice1 = professionalservice_maker(professional0, service1, price = 1, duration = timedelta(minutes = 1))
+        # Act
+        response = professional_client.get(reverse('professionalservice_list'))
+        # Assert
+        assert response.status_code == 200
+        assert len(response.data) == 2
+        
 
 class TestProfessionalServiceRetrieveView:
     pass
