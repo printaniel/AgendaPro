@@ -77,8 +77,6 @@ class ProfessionalServiceCreateSerializer(ProfessionalServiceSerializer):
         model = ProfessionalService
         fields = ['id','professional','service_name','service', 'price', 'duration', 'description']
     
-
-
 class AppointmentSerializer(serializers.ModelSerializer):
 
     """

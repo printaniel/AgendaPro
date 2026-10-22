@@ -69,7 +69,7 @@ class AppointmentUpdateView(APIView):
             try:
                 AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
                 read_serializer_result = AppointmentSerializer(instance = appointment)
-            except (ProfessionalDoesNotOfferService, AppointmentConflict, InvalidRole, NotAllowedAction) as e:
+            except (AppointmentConflict, InvalidRole) as e:
                 return Response({"error": str(e)}, status = e.status)  
             except IntegrityError:
                 return Response({"error":"Appointment cannot be created"}, status = status.HTTP_409_CONFLICT)        
