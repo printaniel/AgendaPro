@@ -93,8 +93,49 @@ class TestProfessionalServiceRetrieveView:
         
         assert response.status_code == 404
         
+    
+@pytest.mark.django_db
 class TestProfessionalServiceUpdateView:
-    pass
+    
+    @pytest.fixture(autouse = True)
+    def setup(self, professionalservice):
+        self.professionalservice = professionalservice
+        self.url = reverse('professionalservice_update', args=[professionalservice.id])      
+    
+    def test_owner_access(self, professional_client):
+        new_price = 30
+        new_duration = timedelta(hours = 3)
+        response = professional_client.patch(self.url, data = {
+            "duration": new_duration,
+            "price": new_price})
+        
+        self.professionalservice.refresh_from_db()
+        assert response.status_code == 200
+        assert self.professionalservice.price == new_price
+    
+    def test_customer_cannot_access(self, customer_client):
+        response = customer_client.patch(self.url)
+        
+        assert response.status_code == 403
+        
+    def test_another_professional_cannot_access(self, user_client_maker):
+        another_professional = ProfessionalFactory()
+        another_professional_client = user_client_maker(another_professional)
+        response = another_professional_client.patch(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_annonymus_user_cannot_access(self, api_client):
+        assert api_client.patch(self.url).status_code == 401
+    
+    def test_incorrect_price(self, professional_client):
+        negative_price = -56
+        old_price = self.professionalservice.price
+        response = professional_client.patch(self.url, data = {"price":negative_price})
+        self.professionalservice.refresh_from_db()
+        
+        assert response.status_code == 400
+        assert self.professionalservice.price == old_price
 
 class TestProfessionalServiceDestroyView:
     pass
