@@ -1,7 +1,6 @@
 import pytest
 from django.urls import reverse
 from management_system.tests.factories import ProfessionalFactory
-from management_system.tests.conftest import admin, admin_client, user_client_maker
 
 CORRECT_DATA = {
     "username": "Aniel",

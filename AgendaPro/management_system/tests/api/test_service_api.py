@@ -1,8 +1,4 @@
 import pytest
-from management_system.tests.conftest import (
-    service,
-    admin_client
-)
 from management_system.models import Service
 from django.urls import reverse
 

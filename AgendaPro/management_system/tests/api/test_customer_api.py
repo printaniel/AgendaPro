@@ -1,11 +1,5 @@
 import pytest
 from django.urls import reverse
-from management_system.tests.conftest import (
-    api_client,
-    admin_client,
-    customer_client, customer,
-    professional_client,
-    user_client_maker)
 from management_system.tests.factories import CustomerFactory
 from django.urls import reverse
 
