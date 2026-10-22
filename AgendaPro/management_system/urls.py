@@ -36,11 +36,11 @@ urlpatterns = [
     path('service/<int:pk>/service-update/',service_views.ServiceUpdateView.as_view(), name = 'service_update'),
     path('service/<int:pk>/service-destroy/',service_views.ServiceDestroyView.as_view(), name = 'service_destroy'), 
     # ProfessionalService
-    path('service/professionalservice-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'create-professional-service'),
-    path('service/professionalservice-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservices-list'),
-    path('service/<int:pk>/professionalservice-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice-retrieve'),  
-    path('service/<int:pk>/professionalservice-update/', professionalservice_views.ProfessionalServiceUpdateView.as_view(),name = 'professionalservice-update'),
-    path('service/<int:pk>/professionalservice-destroy/', professionalservice_views.ProfessionalServiceDestroyView.as_view(),name = 'professionalservice-destroy'),
+    path('service/professionalservice-create/', professionalservice_views.ProfessionalServiceCreateView.as_view(),name = 'professionalservice_create'),
+    path('service/professionalservice-list/',professionalservice_views.ProfessionalServiceListView.as_view(),name = 'professionalservice_list'),
+    path('service/<int:pk>/professionalservice-retrieve/',professionalservice_views.ProfessionalServiceRetrieveView.as_view(), name = 'professionalservice_retrieve'),  
+    path('service/<int:pk>/professionalservice-update/', professionalservice_views.ProfessionalServiceUpdateView.as_view(),name = 'professionalservice_update'),
+    path('service/<int:pk>/professionalservice-destroy/', professionalservice_views.ProfessionalServiceDestroyView.as_view(),name = 'professionalservice_destroy'),
     # Appointments
     path('appointment/appointment-create/', appointment_views.AppointmentCreateView.as_view(), name = 'appointment-create-as-professional'),
     path('appointment/appointment-list/', appointment_views.AppointmentListView.as_view(), name = 'appointment-list'),
