@@ -223,3 +223,95 @@ class TestAppointmentRetrieveView:
         
         assert response.status_code == 401
     
+    
+@pytest.mark.django_db
+class TestAppointmentUpdateView:
+    
+    @pytest.fixture(autouse= True)
+    def setup(self, appointment):
+        self.appointment = appointment
+        self.correct_appointment_date = timezone.now() + timedelta(days = 2)
+        self.url = reverse('appointment_update', args = [appointment.id])
+    
+    def test_admin_can_access(self, admin_client):        
+        response = admin_client.patch(self.url, data = {"appointment_date":self.correct_appointment_date})   
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.appointment_date == self.correct_appointment_date
+    
+    def test_professional_owner_can_access(self, user_client_maker):
+        profesional_client = user_client_maker(self.appointment.professional)
+        response = profesional_client.patch(self.url, data = {"appointment_date":self.correct_appointment_date})
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.appointment_date == self.correct_appointment_date
+    
+    def test_customer_owner_can_access(self, user_client_maker):
+        customer_client = user_client_maker(self.appointment.customer)
+        response = customer_client.patch(self.url, data = {"appointment_date":self.correct_appointment_date})
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.appointment_date == self.correct_appointment_date
+            
+    def test_another_professional_cannot_access(self, user_client_maker):
+        another_professional_client = user_client_maker(ProfessionalFactory())
+        response = another_professional_client.patch(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_another_customer_cannot_access(self, user_client_maker):
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.patch(self.url)
+        
+        assert response.status_code == 403    
+        
+    def test_non_authenticated_user_cannot_access(self, api_client):
+        response = api_client.patch(self.url)
+        
+        assert response.status_code == 401
+            
+
+@pytest.mark.django_db
+class TestAppointmentCancelView:
+    
+    @pytest.fixture(autouse= True)
+    def setup(self, appointment):
+        self.appointment = appointment
+        self.url = reverse('appointment_cancel', args = [appointment.id])
+    
+    def test_admin_can_access(self, admin_client):        
+        response = admin_client.patch(self.url)   
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.cancelled_at != None
+    
+    def test_professional_owner_can_access(self, user_client_maker):
+        profesional_client = user_client_maker(self.appointment.professional)
+        response = profesional_client.patch(self.url)   
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.cancelled_at != None
+    
+    def test_customer_owner_can_access(self, user_client_maker):
+        customer_client = user_client_maker(self.appointment.customer)
+        response = customer_client.patch(self.url)   
+        self.appointment.refresh_from_db()
+        assert response.status_code == 200
+        assert self.appointment.cancelled_at != None
+            
+    def test_another_professional_cannot_access(self, user_client_maker):
+        another_professional_client = user_client_maker(ProfessionalFactory())
+        response = another_professional_client.patch(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_another_customer_cannot_access(self, user_client_maker):
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.patch(self.url)
+        
+        assert response.status_code == 403    
+        
+    def test_non_authenticated_user_cannot_access(self, api_client):
+        response = api_client.patch(self.url)
+        
+        assert response.status_code == 401

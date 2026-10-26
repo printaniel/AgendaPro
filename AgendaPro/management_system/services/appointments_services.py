@@ -6,8 +6,9 @@ from management_system.services.service_exceptions import (
     AppointmentConflict,
     InvalidRole,
     MissingRequiredField)
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from django.db import transaction
+from django.utils import timezone
 
 LATE_CANCELLED_TIME = timedelta(days = 2)
 
@@ -15,8 +16,6 @@ class AppointmentService:
     
     @staticmethod
     def create_appointment(user: User, data: dict) -> Appointment :
-        AppointmentService._validate_customer_professional_role(user)
-        AppointmentService._validate_required_actor_fields(user, data)
         professional, customer, service, appointment_date  = AppointmentService._resolve_all_for_create(user, data)
         AppointmentService.ensure_professional_offers_service(service = service,professional = professional)  
         return Appointment.objects.create(professional = professional, customer = customer, appointment_date = appointment_date, service = service)
@@ -24,10 +23,7 @@ class AppointmentService:
     @staticmethod 
     def edit_appointment(appointment: Appointment, data: dict, user: User):
         AppointmentService._validate_customer_professional_role(user)
-        appointment_date = data.get("appointment_date")
-        professional = data.get("professional")
-        appointment.professional = professional
-        appointment.appointment_date = appointment_date
+        appointment.appointment_date = data.get("appointment_date") if 'appointment_date' in data else appointment.appointment_date
         AppointmentService._validate_unique_appointment(appointment)
         appointment.save()
 
@@ -45,7 +41,7 @@ class AppointmentService:
 
     @staticmethod
     def get_not_cancelled_appointment(appointment_id: int):
-        appointment = Appointment.objects.filter(id = appointment_id, cancelled = False).first()
+        appointment = Appointment.objects.filter(id = appointment_id, status = 'confirmed').first()
         if not appointment:
             raise EntityNotFound('not cancelled appointment', appointment_id)
         return appointment
@@ -77,25 +73,19 @@ class AppointmentService:
     def _validate_customer_professional_role(user: User):
         if not user or user.role not in ['professional', 'customer']:
             raise InvalidRole('create appointment')
-        
-    def _validate_required_actor_fields(user: User, data: dict):
-        if user.role == 'customer' and not data.get('professional'):
-            raise MissingRequiredField('professional')
-        if user.role == 'professional' and not data.get('customer'):
-            raise MissingRequiredField('customer')
-    
+         
     def _validate_unique_appointment(appointment: Appointment):
         appointments = Appointment.objects.filter(
             professional = appointment.professional, 
             service = appointment.service, 
             appointment_date = appointment.appointment_date,
-            cancelled = False).exclude(id = appointment.id)
+            cancelled_at = None).exclude(id = appointment.id)
         if appointments.exists():
             raise AppointmentConflict
 
     def ensure_professional_offers_service(service:Service, professional: User):
         if not professional.professional_services.filter(service = service).exists():
-            raise ProfessionalDoesNotOfferService  
+            raise ProfessionalDoesNotOfferService
     
     def _resolve_all_for_create(user: User, data: dict):       
         service = data.get('service')

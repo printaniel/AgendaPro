@@ -25,7 +25,7 @@ class EntityNotFound(ServiceException):
 
 class MissingRequiredField(ServiceException):    
     def __init__(self, field):
-        super().__init__(message = f'Missing required field {field}')
+        super().__init__(message = f'Missing required field {field}', status = 400)
         
 class NotAllowedAction(ServiceException):
     def __init__(self, action):
