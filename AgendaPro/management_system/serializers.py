@@ -1,6 +1,7 @@
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 from management_system.models import User, Service, ProfessionalService, Appointment, User
-from datetime import datetime
+from django.utils import timezone
 
 class UserSerializer(serializers.ModelSerializer):
     
@@ -77,41 +78,47 @@ class ProfessionalServiceCreateSerializer(ProfessionalServiceSerializer):
         model = ProfessionalService
         fields = ['id','professional','service_name','service', 'price', 'duration', 'description']
     
-class AppointmentSerializer(serializers.ModelSerializer):
-
-    """
-    Serializer utilizado tanto como para la creacion y listado de citas 
-    """
+class BaseAppointmentSerializer(serializers.ModelSerializer):
 
     customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True, required = False)
     customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
     professional = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'professional'), write_only = True, required = False)
     professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
-    cancelled = serializers.BooleanField(read_only = True)
 
     id = serializers.IntegerField(read_only = True)
 
     class Meta:
         model = Appointment
-        fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date']
-        
+        fields = ['id','customer_name','customer','professional_name','professional','service', 'appointment_date','status']
+    
     def validate_appointment_date(self, appointment_date):
-        if appointment_date < datetime.now():
+        if appointment_date < timezone.now():
             raise serializers.ValidationError('The appointment date must be in the future')
         return appointment_date
+    
+class CustomerAppointmentSerializer(BaseAppointmentSerializer):
+    professional = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'professional'), write_only = True, required = True)
 
+class ProfessionalAppointmentSerializer(BaseAppointmentSerializer):
+    customer = serializers.PrimaryKeyRelatedField(queryset = User.objects.filter(role = 'customer'), write_only = True, required = True)
+
+class ReadAppointmentSerializer(serializers.ModelSerializer):
+    
+    customer_name = serializers.StringRelatedField(source = 'customer')
+    professional_name = serializers.StringRelatedField(source = 'professional')
+    service_name = serializers.StringRelatedField(source = 'service')
+    
+    class Meta:
+        model = Appointment
+        fields = ['customer_name', 'professional_name', 'service_name', 'appointment_date', 'status']
 class AppointmentUpdateSerializer(serializers.ModelSerializer):
-
-    customer_name = serializers.StringRelatedField(source = 'customer', read_only = True)
-    professional_name = serializers.StringRelatedField(source = 'professional', read_only = True)
-    cancelled = serializers.BooleanField(read_only = True)
 
     class Meta: 
         model = Appointment
-        fields = ["id", "customer_name","professional_name","appointment_date"]
+        fields = ["appointment_date"]
 
     def validate_appointment_date(self, appointment_date):
-        if appointment_date < datetime.now():
+        if appointment_date < timezone.now():
             raise serializers.ValidationError('The appointment date must be in the future')
         return appointment_date       
 
