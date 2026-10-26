@@ -138,3 +138,37 @@ class TestAppointmentCreateView:
             f"Debe existir exactamente UNA cita en BD, encontradas: {persisted}"
         )
 
+@pytest.mark.django_db       
+class TestAppointmentListView:
+    
+    @pytest.fixture(autouse = True)
+    def setup(self):
+        self.url = reverse('appointment_list')
+        
+    def test_admin_can_access(self, admin_client):
+        
+        appointment0 = AppointmentFactory()
+        appointment1 = AppointmentFactory()
+        
+        response = admin_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert len(response.data) == 2
+        assert parse_datetime(response.data[0]['appointment_date']) == appointment0.appointment_date
+        
+    
+    def test_professional_cannot_access(self, professional_client):
+        response = professional_client.get(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_customer_cannot_access(self, customer_client):
+        response = customer_client.get(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_not_authenticated_user_cannot_access(self, api_client):
+        response = api_client.get(self.url)
+        
+        assert response.status_code == 401
+    
