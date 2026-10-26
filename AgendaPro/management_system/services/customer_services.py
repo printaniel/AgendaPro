@@ -4,7 +4,7 @@ from management_system.services.service_exceptions import EntityNotFound
 class CustomerServices:
 
     @staticmethod
-    def get_customers():
+    def list_customers():
         return User.objects.filter(role = 'customer')
 
     @staticmethod

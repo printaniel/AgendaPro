@@ -18,8 +18,8 @@ class RoleSeparetedUserListView(APIView):
     permission_classes = [IsAdminUser]
     def get(self, request):
 
-        professionals = ProfessionalServices.get_professionals()
-        customers = CustomerServices.get_customers()
+        professionals = ProfessionalServices.list_professionals()
+        customers = CustomerServices.list_customers()
 
         customer_serializer = UserSerializer(customers, many = True)
         professional_serializer = PrivateProfessionalSerializer(professionals, many = True)

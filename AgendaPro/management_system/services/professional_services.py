@@ -4,13 +4,8 @@ from management_system.services.service_exceptions import EntityNotFound
 class ProfessionalServices:
 
     @staticmethod
-    def get_professionals():
+    def list_professionals():
         return User.objects.filter(role = 'professional')
-
-    @staticmethod
-    def get_professional(id: int):
-        return User.objects.filter(role = 'professional', id = id).first()
-
     
     @staticmethod
     def get_active_by_id(id: int):

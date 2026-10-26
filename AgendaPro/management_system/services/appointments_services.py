@@ -45,13 +45,6 @@ class AppointmentService:
         if not appointment:
             raise EntityNotFound('not cancelled appointment', appointment_id)
         return appointment
-
-    @staticmethod
-    def get_appointment(appointment_id: int):
-        appointment = Appointment.objects.filter(id = appointment_id).first()
-        if not appointment:
-            raise EntityNotFound('appointment', appointment_id)
-        return appointment
         
     @staticmethod
     def _resolve_all_for_update(user: User, data: dict, appointment: Appointment) -> tuple[User, User, Service, datetime]:
