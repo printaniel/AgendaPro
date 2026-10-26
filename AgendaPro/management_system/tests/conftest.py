@@ -3,11 +3,19 @@ from management_system.tests.factories import (
     ProfessionalFactory,
     CustomerFactory,
     AdminFactory,
-    ServiceFactory)
-from management_system.models import ProfessionalService
+    ServiceFactory,
+    AppointmentFactory)
+from management_system.models import ProfessionalService, Appointment
 from rest_framework.test import APIClient
 from rest_framework_simplejwt.tokens import RefreshToken
 from datetime import timedelta
+
+def pytest_configure(config):
+    config.addinivalue_line(
+        "markers",
+        "concurrency: tests que ejercitan condiciones de carrera (lentos, requiere transaction=True)",
+    )
+
 
 @pytest.fixture
 def professional(db):
@@ -81,6 +89,22 @@ def professionalservice_maker():
             duration = duration,
             description = description if description else 'default description')
     return _maker
+
+@pytest.fixture
+def appointment_maker():
+    def _maker(professional, customer, service, appointment_date):
+        return Appointment.objects.create(
+            professional = professional,
+            customer = customer,
+            service = service,
+            appointment_date = appointment_date
+        )
+    return _maker
+
+@pytest.fixture
+def appointment():
+    return AppointmentFactory()
+        
     
 
 

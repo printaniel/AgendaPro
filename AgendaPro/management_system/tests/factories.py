@@ -1,6 +1,9 @@
 import factory
 from factory.django import DjangoModelFactory
-from management_system.models import (User, Service)
+from management_system.models import (User, Service, Appointment)
+from django.utils import timezone
+from datetime import timedelta
+from factory import SubFactory
 
 DEFAULT_PASSWORD = 'hesoyam2'
 
@@ -36,3 +39,12 @@ class ServiceFactory(DjangoModelFactory):
         model = Service
     
     service_name = factory.Sequence(lambda n: f"service{n}")
+
+class AppointmentFactory(DjangoModelFactory):
+    class Meta:
+        model = Appointment
+        
+    professional = SubFactory(ProfessionalFactory)
+    customer = SubFactory(CustomerFactory)
+    service = SubFactory(ServiceFactory)
+    appointment_date = timezone.now() + timedelta(days = 1)
