@@ -81,7 +81,7 @@ class TestAppointmentCreateView:
         response = customer_client.post(self.url, data = self.correct_data)
         
         assert response.status_code == 400
-        assert response.data['error'] == 'The professional doesnot offer the service'
+        assert response.data['error']['code'] == 'service_not_offered'
    
     @pytest.mark.concurrency
     @pytest.mark.django_db(transaction=True)

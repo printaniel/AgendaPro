@@ -4,8 +4,8 @@ from management_system.services.service_exceptions import (
     ProfessionalDoesNotOfferService,
     EntityNotFound,
     AppointmentConflict,
-    InvalidRole,
-    MissingRequiredField)
+    InvalidRole
+    )
 from datetime import datetime, timedelta
 from django.db import transaction
 from django.utils import timezone

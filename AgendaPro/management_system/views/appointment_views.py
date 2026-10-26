@@ -12,15 +12,8 @@ from management_system.serializers import (
     )
 from management_system.models import Appointment
 from management_system.services.appointments_services import AppointmentService
-from management_system.services.service_exceptions import (
-    ProfessionalDoesNotOfferService,
-    InvalidRole,
-    EntityNotFound,
-    AppointmentConflict,
-    MissingRequiredField
-    )
+from management_system.services.service_exceptions import InvalidRole
 from management_system.permissions import IsAppointmentOwnerOrAdmin
-from django.db.utils import IntegrityError
 from django.db import transaction
 
 
@@ -35,21 +28,13 @@ class AppointmentCreateView(APIView):
         elif request.user.role == 'customer':
             serializer = CustomerAppointmentSerializer(data = request.data)
         else:
-            return Response({"error": f"Role {request.user.role} cannot create appointments"}, status = status.HTTP_403_FORBIDDEN)
-            
-            
+            raise InvalidRole()
+                    
         if serializer.is_valid():
-
-            try:
-                with transaction.atomic():
-                    appointment = AppointmentService.create_appointment(request.user, serializer.validated_data)
-                    read_serializer = ReadAppointmentSerializer(instance = appointment)
-                return Response(read_serializer.data, status = status.HTTP_201_CREATED)
-            except IntegrityError:
-                return Response({"error":"Appointment cannot be created"}, status = status.HTTP_409_CONFLICT)
-            except (ProfessionalDoesNotOfferService, InvalidRole, MissingRequiredField) as e:
-                return Response({"error": str(e)}, status = e.status)
-                
+            with transaction.atomic():
+                appointment = AppointmentService.create_appointment(request.user, serializer.validated_data)
+            read_serializer = ReadAppointmentSerializer(instance = appointment)
+            return Response(read_serializer.data, status = status.HTTP_201_CREATED)
         return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
 
@@ -69,23 +54,14 @@ class AppointmentUpdateView(APIView):
     permission_classes = [IsAuthenticated, IsAppointmentOwnerOrAdmin]
 
     def patch(self, request, pk):
-        
-        try:
-            appointment = AppointmentService.get_not_cancelled_appointment(pk)
-        except EntityNotFound as e:
-            return Response({"error":str(e)}, status = e.status)
+        appointment = AppointmentService.get_not_cancelled_appointment(pk)
         
         self.check_object_permissions(request, appointment)
         serializer = AppointmentUpdateSerializer(instance = appointment, data = request.data, partial = True)
         
         if serializer.is_valid():
-            try:
-                AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
-                read_serializer_result = ReadAppointmentSerializer(instance = appointment)
-            except (AppointmentConflict, InvalidRole) as e:
-                return Response({"error": str(e)}, status = e.status)  
-            except IntegrityError:
-                return Response({"error":"Appointment cannot be created"}, status = status.HTTP_409_CONFLICT)        
+            AppointmentService.edit_appointment(appointment, serializer.validated_data, request.user)
+            read_serializer_result = ReadAppointmentSerializer(instance = appointment)    
             return Response(read_serializer_result.data,status = status.HTTP_200_OK)
         else:
             return Response({"error":serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
@@ -95,10 +71,7 @@ class AppointmentCancelView(APIView):
 
     permission_classes = [IsAuthenticated, IsAppointmentOwnerOrAdmin]
     def patch(self, request, pk):
-        try:
-            appointment = AppointmentService.get_not_cancelled_appointment(pk)
-        except EntityNotFound as e:
-            return Response({"error":str(e)}, status = e.status)
+        appointment = AppointmentService.get_not_cancelled_appointment(pk)
 
         self.check_object_permissions(request, appointment)
 

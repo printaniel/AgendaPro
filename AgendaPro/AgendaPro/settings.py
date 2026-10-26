@@ -132,7 +132,8 @@ AUTH_USER_MODEL = 'management_system.User'
 
 REST_FRAMEWORK  = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    "EXCEPTION_HANDLER": "management_system.views.exception_handler.domain_exception_handler"
 }
 
 SIMPLE_JWT = {
