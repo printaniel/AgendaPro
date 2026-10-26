@@ -172,3 +172,54 @@ class TestAppointmentListView:
         
         assert response.status_code == 401
     
+@pytest.mark.django_db
+class TestAppointmentRetrieveView:
+    
+    @pytest.fixture(autouse= True)
+    def setup(self, appointment):
+        self.appointment = appointment
+        self.url = reverse('appointment_retrieve', args=[appointment.id])
+    
+    def test_admin_can_access(self, admin_client):
+        response = admin_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert response.data['professional_name'] == self.appointment.professional.username
+        assert response.data['customer_name'] == self.appointment.customer.username
+        assert parse_datetime(response.data['appointment_date']) ==  self.appointment.appointment_date
+    
+    def test_professional_owner_can_access(self, user_client_maker):
+        profesional_client = user_client_maker(self.appointment.professional)
+        response = profesional_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert response.data['professional_name'] == self.appointment.professional.username
+        assert response.data['customer_name'] == self.appointment.customer.username
+        assert parse_datetime(response.data['appointment_date']) ==  self.appointment.appointment_date
+    
+    def test_customer_owner_can_access(self, user_client_maker):
+        customer_client = user_client_maker(self.appointment.customer)
+        response = customer_client.get(self.url)
+        
+        assert response.status_code == 200
+        assert response.data['professional_name'] == self.appointment.professional.username
+        assert response.data['customer_name'] == self.appointment.customer.username
+        assert parse_datetime(response.data['appointment_date']) ==  self.appointment.appointment_date
+    
+    def test_another_professional_cannot_access(self, user_client_maker):
+        another_professional_client = user_client_maker(ProfessionalFactory())
+        response = another_professional_client.get(self.url)
+        
+        assert response.status_code == 403
+    
+    def test_another_customer_cannot_access(self, user_client_maker):
+        another_customer_client = user_client_maker(CustomerFactory())
+        response = another_customer_client.get(self.url)
+        
+        assert response.status_code == 403    
+        
+    def test_non_authenticated_user_cannot_access(self, api_client):
+        response = api_client.get(self.url)
+        
+        assert response.status_code == 401
+    
