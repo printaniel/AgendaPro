@@ -43,10 +43,7 @@ class CustomerDestroyView(APIView):
     
     def delete(self, request, pk):
 
-        try:
-           customer = CustomerServices.get_active_customer_by_id(pk)
-        except EntityNotFound as e:
-            return Response({"error": str(e)}, status = e.status)
+        customer = CustomerServices.get_active_customer_by_id(pk)
         
         self.check_object_permissions(request, customer)
         CustomerServices.deactivate(customer)

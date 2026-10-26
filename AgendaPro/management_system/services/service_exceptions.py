@@ -21,8 +21,8 @@ class InvalidRole(DomainException):
 
 class EntityNotFound(DomainException):
     code = 'entity_not_found'
-    def __init__(self, entity, pk, status = 404):
-        super().__init__(f'{entity} with id {pk} not found', status) 
+    def __init__(self, entity, pk,):
+        super().__init__(f'{entity} with id {pk} not found') 
         
 class NotAllowedAction(DomainException):
     code = 'not_allowed'

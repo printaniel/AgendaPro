@@ -16,7 +16,7 @@ HTTP_STATUS_BY_ERROR = {
     AppointmentConflict: 409,
     ProfessionalDoesNotOfferService: 400,
     InvalidRole: 403,
-    IntegrityError: 409
+
 }
 
 
@@ -34,5 +34,7 @@ def domain_exception_handler(exc, context):
                 }
                 return Response(body, status=HTTP_STATUS_BY_ERROR[cls])
         return None
-
+    elif isinstance(exc, IntegrityError):
+        return Response(str(exc), status = 409)
+        
     return drf_exception_handler(exc, context)

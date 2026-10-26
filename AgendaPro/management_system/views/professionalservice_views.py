@@ -6,7 +6,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from management_system.serializers import ProfessionalServiceSerializer, ProfessionalServiceCreateSerializer
 from management_system.permissions import IsProfessionalOrAdmin, IsProfessionalServiceOwnerOrAdmin
 from management_system.models import ProfessionalService
-from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 
 
@@ -18,10 +17,7 @@ class ProfessionalServiceCreateView(APIView):
 
         serializer = ProfessionalServiceCreateSerializer(data = request.data)
         if serializer.is_valid():
-            try:
-                serializer.save(professional = request.user)
-            except IntegrityError as e:
-                return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_409_CONFLICT)
+            serializer.save(professional = request.user)
             return Response(serializer.data, status = status.HTTP_201_CREATED)
         return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST )
 
@@ -46,10 +42,7 @@ class ProfessionalServiceUpdateView(APIView):
         serializer = ProfessionalServiceSerializer(data = request.data, instance = professionalservice, partial =True)
 
         if serializer.is_valid():
-            try:
-                serializer.save()
-            except IntegrityError as e:
-                return Response({"error": "The professional already has a service with this data"}, status = status.HTTP_400_BAD_REQUEST)
+            serializer.save()
             return Response(serializer.data, status = status.HTTP_200_OK)
         return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
