@@ -6,7 +6,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from management_system.serializers import UserSerializer
 from management_system.models import User
 from management_system.permissions import IsCustomerOrAdmin, IsOwnerOrAdmin
-from management_system.services.customer_services import CustomerServices
 from management_system.services.service_exceptions import EntityNotFound
 
 
@@ -42,11 +41,13 @@ class CustomerDestroyView(APIView):
     permission_classes = [IsAuthenticated, IsCustomerOrAdmin, IsOwnerOrAdmin]
     
     def delete(self, request, pk):
-
-        customer = CustomerServices.get_active_customer_by_id(pk)
+        try:
+            customer = User.objects.customers().get(id = pk)
+        except User.DoesNotExist:
+            raise EntityNotFound('customer', pk)
         
         self.check_object_permissions(request, customer)
-        CustomerServices.deactivate(customer)
+        customer.deactivate()
         return Response(status = status.HTTP_204_NO_CONTENT)
 
 

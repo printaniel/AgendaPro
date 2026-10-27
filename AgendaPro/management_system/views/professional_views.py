@@ -41,8 +41,11 @@ class ProfessionalDestroyView(APIView):
     
     def delete(self, request, pk):
 
-        user = ProfessionalServices.get_active_by_id(id = pk)   
-        self.check_object_permissions(request, user)
-        ProfessionalServices.deactivate(user)
+        try:
+            professional = User.objects.professionals().get(id = pk)
+        except User.DoesNotExist:
+            raise EntityNotFound('professional', pk)
+        self.check_object_permissions(request, professional)
+        professional.deactivate()
         return Response(status = status.HTTP_204_NO_CONTENT)
         

@@ -1,12 +1,32 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
+
+
+class UserQuerySet(models.QuerySet):
+    def customers(self):
+        return self.filter(role = 'customer')
+    
+    def professionals(self):
+        return self.filter(role = 'professional')
+
+    def active_customers(self):
+        return self.filter(role = 'customer', is_active = True)
+    
+    def active_professionals(self):
+        return self.filter(role = 'professional', is_active = True)
+
 
 class User(AbstractUser):
     ROLE = [("professional","Professional"), ("customer", "Customer")]
     role = models.CharField(max_length = 50,choices = ROLE)
+    objects = UserManager.from_queryset(UserQuerySet)()
     
     def __str__(self):
         return self.username
+    
+    def deactivate(self):
+        self.is_active = False
+        self.save(update_fields=["is_active"])
     
 class ProfessionalProfile(models.Model):
     user = models.OneToOneField(User, on_delete= models.CASCADE)
